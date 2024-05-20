@@ -1,13 +1,14 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router/index'
-import store from './store/index'
+import { createApp } from 'vue';
+import App from './App.vue';
 
-const app = createApp(App)
+import router from './router/index';
+import store from './store/index';
 
-app.use(router)
-app.use(store)
+const app = createApp(App);
 
-store.dispatch('initializeAuthentication')  // 로그인 상태 초기화
+app.use(router);
+app.use(store);
 
-app.mount('#app')
+store.dispatch('initializeAuthentication'); // 로그인 상태 초기화
+
+app.mount('#app');
