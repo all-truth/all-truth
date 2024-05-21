@@ -57,12 +57,29 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import store from '../store/index';
+
 export default {
   name: 'Header',
   setup () {
-    
+    const isAuthenticated = computed(() => store.state.isAuthenticated);
 
-    return {}
+    const logout = () => {
+      // axios.post('logout').then(() => {
+      //   store.dispatch('logout');
+      //   router.push({path: '/'});
+      // }).catch((error) => {
+      //   console.error('로그아웃 중 에러 발생', error);
+      // });
+
+      console.log('로그아웃');
+    };
+
+    return {
+      isAuthenticated,
+      logout,
+    }
   }
 }
 </script>
