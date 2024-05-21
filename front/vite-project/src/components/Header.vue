@@ -3,9 +3,9 @@
     <div class="px-3">
       <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-          <a href="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-black text-decoration-none">
-            <span class="home">올투르쓰</span>
-          </a>
+          <router-link to="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-black text-decoration-none">
+            <span class="home">All Truth</span>
+          </router-link>
 
           <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
             <input type="search" class="form-control" placeholder="Search reviews..." aria-label="Search">
@@ -19,7 +19,7 @@
           </div>
 
           <div class="text-end">
-            <a href="#" class="btn btn-outline-dark me-2" v-if="!isAuthenticated">Login</a>
+            <router-link to="/login" class="btn btn-outline-dark me-2" v-if="!isAuthenticated">Login</router-link>
           </div>
 
           <div class="dropdown text-end" v-if="isAuthenticated">
