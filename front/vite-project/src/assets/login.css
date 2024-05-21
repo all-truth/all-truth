@@ -116,6 +116,7 @@ img {
 
 .login__button {
   display: block;
+  border: 2px;
   padding: 1rem;
   margin: 2rem 0;
   background-color: #4ad395;
@@ -124,6 +125,7 @@ img {
   text-align: center;
   border-radius: 0.5rem;
   transition: 0.3s;
+  width: 100%;
 }
 
 .login__button:hover {
