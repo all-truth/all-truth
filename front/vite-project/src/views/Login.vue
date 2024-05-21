@@ -131,7 +131,6 @@ export default {
   name: 'Login',
   setup() {
     const isAuthenticated = computed(() => store.state.isAuthenticated);
-    const isBlock = ref(false);
     const isMatched = ref(true);
     const signUpState = reactive({
       form: {
