@@ -20,6 +20,7 @@ public class User {
     @Column(unique = true)
     private String loginId;
     private String password;
+    private String nickname;
     private String roles; // User, Admin
 
     public List<String> getRoleList(){
