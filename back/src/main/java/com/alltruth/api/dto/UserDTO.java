@@ -8,7 +8,7 @@ public class UserDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Data
-    static public class UserJoinReq{
+    public static class UserJoinReq{
         private String loginId;
         private String password;
         private String passwordConfirm;
@@ -18,7 +18,7 @@ public class UserDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Data
-    static public class UserJoinRes{
+    public static class UserJoinRes{
         private String message;
 
     }
