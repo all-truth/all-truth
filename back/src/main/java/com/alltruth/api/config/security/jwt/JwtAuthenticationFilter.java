@@ -3,9 +3,6 @@ package com.alltruth.api.config.security.jwt;
 import com.alltruth.api.config.security.auth.PrincipalDetails;
 import com.alltruth.api.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +22,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
-
+    private final JwtTokenProvider jwtTokenProvider;
     // 로그인 요청을 하면 실행되는 메서드
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException{
@@ -53,15 +50,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)throws IOException, ServletException{
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
-        String jwtToken = Jwts.builder()
-                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setIssuer("승윤")
-                .setExpiration(new Date(new Date().getTime() + Duration.ofMinutes(1).toMillis()))
-                .setSubject(principalDetails.getUser().getId().toString())
-                .claim("id", principalDetails.getUser().getId())
-                .claim("username", principalDetails.getUser().getLoginId())
-                .signWith(SignatureAlgorithm.HS256, "secretkey")
-                .compact();
+        String jwtToken = jwtTokenProvider.generateToken(principalDetails.getUser(), Duration.ofHours(1));
 
         System.out.println("successfulAuthentication 토큰 생성   " + jwtToken);
         // 사용자 헤더에 응답시킴

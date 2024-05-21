@@ -20,10 +20,12 @@ import java.io.IOException;
 // 권한이나 인증이 필요한 특정 주소를 요청했을 때 타는 필터
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private UserRepository userRepository;
+    private JwtTokenProvider jwtTokenProvider;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
         super(authenticationManager);
         this.userRepository = userRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     // 인증이나 권한이 필요한 주소에 요청이 왔을 때 해당 필터를 타게됨
@@ -40,13 +42,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         // JWT 토큰을 검증하여 사용자 확인
         String jwtToken = request.getHeader("Authorization").replace("Bearer ", "");
 
-        String loginId = Jwts.parser()
-                .setSigningKey("sereet")
-                .parseClaimsJws(jwtToken)
-                .getBody().get("loginId", String.class);
+        if(!jwtTokenProvider.validToken(jwtToken)) new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
 
-        if(loginId != null){
-            User user = userRepository.findByLoginId(loginId).orElseThrow(()-> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        Long userId = jwtTokenProvider.getUserId(jwtToken);
+
+        if(userId != null){
+            User user = userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
             PrincipalDetails principalDetails = new PrincipalDetails(user);
             // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어줌

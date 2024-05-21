@@ -2,6 +2,7 @@ package com.alltruth.api.config.security;
 
 import com.alltruth.api.config.security.jwt.JwtAuthenticationFilter;
 import com.alltruth.api.config.security.jwt.JwtAuthorizationFilter;
+import com.alltruth.api.config.security.jwt.JwtTokenProvider;
 import com.alltruth.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,15 +24,15 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final UserRepository userRepository;
-    private final UserDetailsService userDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         // 인증 위임 객체
         AuthenticationManager authenticationManager = authenticationManager((AuthenticationConfiguration) http.getSharedObject(AuthenticationManager.class));
         http.csrf((csrfConfig) -> csrfConfig.disable())
                 .addFilter(corsFilter)
-                .addFilter(new JwtAuthenticationFilter(authenticationManager))// authenticationManager를 넣어줘야함 로그인을 진행하는 매니저임
-                .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider))// authenticationManager를 넣어줘야함 로그인을 진행하는 매니저임
+                .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, jwtTokenProvider))
                 .sessionManagement((sessionPolicy)->sessionPolicy.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin((form) -> form.disable())
                 .httpBasic((basic)->basic.disable())
