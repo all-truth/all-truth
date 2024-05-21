@@ -20,3 +20,8 @@ spring:
 #      naming:
 #        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+
+jwt:
+  issuer: seungyn
+  secret-key: secretkey
+  access-token-expiry: 3600000 #1000 * 60 * 60
