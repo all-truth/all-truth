@@ -52,6 +52,7 @@
             <i class='bx bx-lock login__icon'></i>
             <input type="password" placeholder="Password Confirm" class="login__input" v-model="signUpState.form.passwordConfirm">
           </div>
+          <small v-if="!isMatched" class="password__match">비밀번호가 일치하지 않습니다.</small>
           
           <button type="submit" class="login__button">Sign Up</button>
           
@@ -75,23 +76,8 @@ export default {
   name: 'Login',
   setup() {
     const isAuthenticated = computed(() => store.state.isAuthenticated);
-
-    watchEffect(() => {
-      if(isAuthenticated.value) {
-        router.push({path: '/'});
-      }
-    })
-
     const isBlock = ref(false);
-
-    /**
-     * 로그인, 회원가입 창 전환
-     * @param status 
-     */
-    const changeBlock = (status) => {
-      isBlock.value = status;
-    };
-
+    const isMatched = ref(true);
     const signUpState = reactive({
       form: {
         loginId: "",
@@ -110,29 +96,74 @@ export default {
     })
 
     /**
+     * 로그인한 사용자가 다시 로그인 할 수 없도록 라우팅
+     */
+    watchEffect(() => {
+      if(isAuthenticated.value) {
+        router.push({path: '/'});
+      }
+    })
+
+    /**
+     * 로그인, 회원가입 창 전환
+     * @param status 
+     */
+    const changeBlock = (status) => {
+      isBlock.value = status;
+    };
+
+    /**
+     * 비밀번호 일치 여부 확인
+     * @param status 
+     */
+    const matchedPassword = (status) => {
+      isMatched.value = status;
+    }
+
+    /**
      * 회원가입
      */
     const register = () => {
-      axios.post('/api/join', signUpState.form).then((res) => {
-        signUpState.message = res.data.message;
-        window.alert(signUpState.message);
-        changeBlock(false); // 로그인으로 이동
+      const isFilled = signUpState.form.loginId && signUpState.form.nickName && 
+      signUpState.form.password && signUpState.form.passwordConfirm;
 
-      }).catch((error) => {
-        if(error.response && error.response.data) {
-          signUpState.message = error.response.data.message;
-        } else {
-          signUpState.message = "사용할 수 없는 아이디 입니다.";
-        }
+      if(!isFilled) {
+        window.alert('모든 필드를 작성해주세요.');
+        return;
+      }
 
-        window.alert(signUpState.message);
-      });
+      if(signUpState.form.password !== signUpState.form.passwordConfirm) {
+        matchedPassword(false);
+        return;
+      } else {
+        axios.post('/api/join', signUpState.form).then((res) => {
+          signUpState.message = res.data.message;
+          window.alert(signUpState.message);
+          changeBlock(false); // 로그인으로 이동
+
+        }).catch((error) => {
+          if(error.response && error.response.data) {
+            signUpState.message = error.response.data.message;
+          } else {
+            signUpState.message = "사용할 수 없는 아이디 입니다.";
+          }
+
+          window.alert(signUpState.message);
+        });
+      }
     };
 
     /**
      * 로그인
      */
     const login = () => {
+      const isFilled = signInState.form.loginId && signInState.form.password;
+
+      if(!isFilled) {
+        window.alert('모든 필드를 작성해주세요.');
+        return;
+      }
+
       axios.post('/api/login', signInState.form).then((res) => {
         const accessToken = res.headers["authorization"];
 
@@ -152,10 +183,12 @@ export default {
     return {
       isAuthenticated,
       isBlock,
-      changeBlock,
+      isMatched,
       signUpState,
-      register,
       signInState,
+      changeBlock,
+      matchedPassword,
+      register,
       login
     }
   }
