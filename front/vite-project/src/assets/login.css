@@ -228,5 +228,9 @@ img {
 }
 
 .password__match {
+<<<<<<< HEAD
   color: #ff4b2b;
+=======
+  color: #FF4B2B;
+>>>>>>> 1411b4c (feat: 회원가입, 로그인 시 유효성 검증 추가)
 }
