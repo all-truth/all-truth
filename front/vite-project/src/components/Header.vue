@@ -33,14 +33,14 @@
                 </a>
               </li>
               <li>
-                <router-link to="/orders" class="dropdown-item">Reviews
+                <a href="#" class="dropdown-item">Reviews
                   <i class='bx bxs-file' aria-hidden="true"></i>
-                </router-link>
+                </a>
               </li>
               <li>
-                <router-link to="/cart" class="dropdown-item">Replies
+                <a href="#" to="/cart" class="dropdown-item">Replies
                   <i class='bx bx-reply-all' aria-hidden="true"></i>
-                </router-link>
+                </a>
               </li>
               <li><hr class="dropdown-divider"></li>
               <li>
@@ -73,6 +73,7 @@ export default {
       //   console.error('로그아웃 중 에러 발생', error);
       // });
 
+      store.dispatch('logout');
       console.log('로그아웃');
     };
 
