@@ -4,7 +4,7 @@
 
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
         <div class="col" v-for="review in state.reviews" :key="review.id">
-          <Review :review="review" />
+          <Reviews :review="review" />
         </div>
       </div>
     </div>
@@ -13,13 +13,13 @@
 
 <script>
 import { onMounted, reactive } from 'vue';
-import Review from '../views/Reviews.vue'
+import Reviews from '../views/Reviews.vue'
 import axios from 'axios'
 
 export default {
   name: 'Content',
   components: {
-    Review,
+    Reviews,
   },
   setup() {
     const state = reactive({
