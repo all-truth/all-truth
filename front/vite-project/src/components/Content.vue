@@ -13,7 +13,7 @@
 
 <script>
 import { onMounted, reactive } from 'vue';
-import Review from './Review.vue'
+import Review from '../views/Reviews.vue'
 import axios from 'axios'
 
 export default {
