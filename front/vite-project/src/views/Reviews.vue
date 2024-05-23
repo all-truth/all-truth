@@ -17,12 +17,11 @@
 import handleText from '../scripts/handleString'
 
 export default {
-  name: 'Review',
+  name: 'Reviews',
   props: {
     review: Object
   },
   setup() {
-
     return {
       handleText,
     }
