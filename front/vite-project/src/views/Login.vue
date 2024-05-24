@@ -170,8 +170,17 @@ export default {
         if(accessToken) {
           localStorage.setItem('accessToken', accessToken);
           window.alert('로그인 성공!');
-          store.dispatch('initializeAuthentication');
-          router.push({path: '/'});
+
+          axios.get('/api/user').then((res) => {
+            // Vuex에서 사용자 정보 저장
+            store.dispatch('setUser', res.data);
+            // 초기화 작업 수행
+            store.dispatch('initializeAuthentication');
+            router.push({path: '/'});
+          }).catch((error) => {
+            console.error('사용자 정보를 조회하는데 실패했습니다.', error);
+          });
+
         } else {
           window.alert('로그인 토큰을 받아오는데 실패했습니다.');
         }
