@@ -1,8 +1,10 @@
 package com.alltruth.api.config.security;
 
+import com.alltruth.api.config.security.auth.PrincipalDetails;
 import com.alltruth.api.config.security.jwt.JwtAuthenticationFilter;
 import com.alltruth.api.config.security.jwt.JwtAuthorizationFilter;
 import com.alltruth.api.config.security.jwt.JwtTokenProvider;
+import com.alltruth.api.entity.User;
 import com.alltruth.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +15,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -36,14 +40,27 @@ public class SecurityConfig {
                 .sessionManagement((sessionPolicy)->sessionPolicy.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin((form) -> form.disable())
                 .httpBasic((basic)->basic.disable())
-                .authorizeHttpRequests((request)->
-                        request.anyRequest().permitAll());
+                .authorizeHttpRequests((request)-> {
+                    request.requestMatchers("/review").authenticated();
+                    request.anyRequest().permitAll();
+                });
 
         return http.build();
     }
 
+    public static Long getUserId() {
+        Authentication at = SecurityContextHolder.getContext().getAuthentication();
+
+        if(at == null || at.getPrincipal() == null) throw new RuntimeException("사용자가 없습니다!");
+        PrincipalDetails pd = (PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        User user = pd.getUser();
+        return user.getId();
+    }
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {return new BCryptPasswordEncoder();}
+
 
     // 빈으로 등록해야 사용가능 왜지?
     @Bean
