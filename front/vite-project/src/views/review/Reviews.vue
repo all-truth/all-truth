@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import handleText from '../scripts/handleString'
+import handleText from '../../scripts/handleString'
 
 export default {
   name: 'Reviews',
