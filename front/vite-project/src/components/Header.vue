@@ -59,6 +59,7 @@
 <script>
 import { computed } from 'vue';
 import store from '../store/index';
+import axios from 'axios'
 
 export default {
   name: 'Header',
@@ -66,12 +67,12 @@ export default {
     const isAuthenticated = computed(() => store.state.isAuthenticated);
 
     const logout = () => {
-      // axios.post('logout').then(() => {
-      //   store.dispatch('logout');
-      //   router.push({path: '/'});
-      // }).catch((error) => {
-      //   console.error('로그아웃 중 에러 발생', error);
-      // });
+    //   axios.post('logout').then(() => {
+    //     store.dispatch('logout');
+    //     router.push({path: '/'});
+    //   }).catch((error) => {
+    //     console.error('로그아웃 중 에러 발생', error);
+    //   });
 
       store.dispatch('logout');
       console.log('로그아웃');
@@ -99,9 +100,11 @@ export default {
   width: 30px;
   height: 30px;
   margin-bottom: 5px;
+  margin: auto;
 }
 
 .dropdown {
   cursor: pointer;
+  text-align: center !important;
 }
 </style>
