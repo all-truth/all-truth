@@ -24,7 +24,6 @@ public class PrincipalDetails implements UserDetails {
         });
         return authorities;
     }
-
     @Override
     public String getPassword() {
         return user.getPassword();
