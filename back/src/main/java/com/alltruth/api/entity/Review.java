@@ -1,5 +1,6 @@
 package com.alltruth.api.entity;
 
+import com.alltruth.api.dto.ReviewDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,17 +22,17 @@ public class Review {
     private String storeName;
     private String region;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "review")
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "review", orphanRemoval = true)
     private List<ReviewImage> reviewImages = new ArrayList<>();
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "review")
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "review", orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "review")
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "review", orphanRemoval = true)
     private ReceiptImage receiptImage;
 
     @Builder
@@ -46,6 +47,15 @@ public class Review {
 
         user.getReviewList().add(this);
 
+    }
+
+    public void update(String title, String content, String storeName, String region){
+        this.title = title;
+        this.content = content;
+        this.storeName = storeName;
+        this.region = region;
+        this.reviewImages.clear();
+        this.receiptImage = null;
     }
 
     public void setReceiptImage(ReceiptImage ri){

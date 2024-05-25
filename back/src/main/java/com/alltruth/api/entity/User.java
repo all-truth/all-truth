@@ -21,7 +21,7 @@ public class User {
     private String nickname;
     private String roles; // User, Admin
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")

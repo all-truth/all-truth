@@ -9,6 +9,7 @@ import com.alltruth.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -42,6 +43,9 @@ public class SecurityConfig {
                 .httpBasic((basic)->basic.disable())
                 .authorizeHttpRequests((request)-> {
                     request.requestMatchers("/review").authenticated();
+                    request.requestMatchers(HttpMethod.PUT,"/review/**").authenticated();
+                    request.requestMatchers(HttpMethod.POST,"/review/**").authenticated();
+                    request.requestMatchers(HttpMethod.DELETE,"/review/**").authenticated();
                     request.anyRequest().permitAll();
                 });
 
@@ -56,6 +60,16 @@ public class SecurityConfig {
 
         User user = pd.getUser();
         return user.getId();
+    }
+
+    public static User getUser() {
+        Authentication at = SecurityContextHolder.getContext().getAuthentication();
+
+        if(at == null || at.getPrincipal() == null) throw new RuntimeException("사용자가 없습니다!");
+        PrincipalDetails pd = (PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        User user = pd.getUser();
+        return user;
     }
 
     @Bean

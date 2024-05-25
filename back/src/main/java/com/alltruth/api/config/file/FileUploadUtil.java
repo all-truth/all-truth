@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -91,7 +92,25 @@ public class FileUploadUtil {
         }
     }
 
+    public void delete(String filename){
+        try {
+            Path file = load(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                File f = resource.getFile();
+                f.delete();
+            } else {
+                throw new StorageFileNotFoundException(
+                        "Could not read file: " + filename);
 
+            }
+        }
+        catch (MalformedURLException e) {
+            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
     }

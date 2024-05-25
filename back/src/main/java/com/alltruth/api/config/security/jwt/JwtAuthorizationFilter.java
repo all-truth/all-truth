@@ -32,9 +32,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected  void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)throws IOException, ServletException {
         String jwtHeader = request.getHeader("Authorization");
-
         // 인증 헤더가 없거나 Bearer이 아니면 그냥 진행
-        if(jwtHeader == null || !jwtHeader.startsWith("Bearer")){
+        // 만약 회원가입에 Authorization 헤더가 있으면 검증을 시도함 개선이 필요
+        if(jwtHeader == null || !jwtHeader.startsWith("Bearer") || request.getRequestURL().indexOf("join") != -1){
             filterChain.doFilter(request, response);
             return;
         }
