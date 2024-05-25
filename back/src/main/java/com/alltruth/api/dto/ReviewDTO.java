@@ -41,11 +41,11 @@ public class ReviewDTO {
         }
 
 
-        public ReviewRes toEntityByReview(Review review){
+        public ReviewRes toReviewResByReview(Review review){
             this.images = review.getReviewImages().stream().map((img) -> ReviewImageDTO.ReviewImageRes
                     .builder()
-                    .url("http://localhost:8080/review/img/"+ img.getPath())
-                    .name(img.getPath())
+                    .url(img.getUrl())
+                    .name(img.getName())
                     .id(img.getId())
                     .build()
             ).toList();
@@ -55,7 +55,7 @@ public class ReviewDTO {
             this.content = review.getContent();
             this.region = review.getRegion();
             this.storeName = review.getStoreName();
-            this.receiptImage = "http://localhost:8080/review/img/" + review.getReceiptImage().getPath();
+            this.receiptImage = review.getReceiptImage() != null ?  review.getReceiptImage().getUrl() : "";
 
             return this;
         }
