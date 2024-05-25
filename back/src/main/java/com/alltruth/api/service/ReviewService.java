@@ -47,25 +47,31 @@ public class ReviewService {
                 .user(user)
                 .build();
 
+        System.out.println(images);
         // 리뷰 이미지들 파일 생성
-        Arrays.stream(images).forEach((file) ->{
-            if(!file.isEmpty()){
-                Path filePath = fileUploadUtil.store(file);
-                ReviewImage reviewImage = ReviewImage.builder()
-                        .path(filePath.getFileName().toString())
-                        .review(review)
-                        .build();
+        if(images != null){
 
-                // 근데 이렇게 하나하나 save를 해줘야하나? review를 기준으로 save를 못 하나? > CascadtType.PERSIST로 설정해서 해결
-                //reviewImageRepository.save(reviewImage);
+            Arrays.stream(images).forEach((file) ->{
+                if(!file.isEmpty()){
+                    Path filePath = fileUploadUtil.store(file);
+                    ReviewImage reviewImage = ReviewImage.builder()
+                            .name(filePath.getFileName().toString())
+                            .review(review)
+                            .url("http://localhost:8080/review/img/" +filePath.getFileName().toString() )
+                            .build();
 
-            }
-        });
+                    // 근데 이렇게 하나하나 save를 해줘야하나? review를 기준으로 save를 못 하나? > CascadtType.PERSIST로 설정해서 해결
+                    //reviewImageRepository.save(reviewImage);
 
-        if(!receiptImage.isEmpty()){
+                }
+            });
+        }
+
+        if(receiptImage != null && !receiptImage.isEmpty()){
             Path filePath = fileUploadUtil.store(receiptImage);
             ReceiptImage receiptImageEntity = ReceiptImage.builder()
-                    .path(filePath.getFileName().toString())
+                    .name(filePath.getFileName().toString())
+                    .url("http://localhost:8080/review/img/" +filePath.getFileName().toString())
                     .review(review)
                     .build();
             //receiptImageRepository.save(receiptImageEntity);
@@ -80,7 +86,7 @@ public class ReviewService {
         List<Review> reviews = reviewRepository.findAll();
 
         List<ReviewDTO.ReviewRes> reviewRes = reviews.stream().map((item)->{
-            ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toEntityByReview(item);
+            ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toReviewResByReview(item);
             return res;
         }).toList();
 
@@ -106,24 +112,28 @@ public class ReviewService {
 
 
         // 리뷰 이미지들 파일 생성
-        Arrays.stream(images).forEach((file) ->{
-            if(!file.isEmpty()){
-                Path filePath = fileUploadUtil.store(file);
-                ReviewImage reviewImage = ReviewImage.builder()
-                        .path(filePath.getFileName().toString())
-                        .review(review)
-                        .build();
+        if(images != null){
+            Arrays.stream(images).forEach((file) ->{
+                if(!file.isEmpty()){
+                    Path filePath = fileUploadUtil.store(file);
+                    ReviewImage reviewImage = ReviewImage.builder()
+                            .name(filePath.getFileName().toString())
+                            .review(review)
+                            .url("http://localhost:8080/review/img/" +filePath.getFileName().toString() )
+                            .build();
 
-                // 근데 이렇게 하나하나 save를 해줘야하나? review를 기준으로 save를 못 하나? > CascadtType.PERSIST로 설정해서 해결
-                //reviewImageRepository.save(reviewImage);
+                    // 근데 이렇게 하나하나 save를 해줘야하나? review를 기준으로 save를 못 하나? > CascadtType.PERSIST로 설정해서 해결
+                    //reviewImageRepository.save(reviewImage);
 
-            }
-        });
+                }
+            });
+        }
 
-        if(!receiptImage.isEmpty()){
+        if(receiptImage != null && !receiptImage.isEmpty()){
             Path filePath = fileUploadUtil.store(receiptImage);
             ReceiptImage receiptImageEntity = ReceiptImage.builder()
-                    .path(filePath.getFileName().toString())
+                    .name(filePath.getFileName().toString())
+                    .url("http://localhost:8080/review/img/" +filePath.getFileName().toString())
                     .review(review)
                     .build();
             //receiptImageRepository.save(receiptImageEntity);
@@ -132,7 +142,7 @@ public class ReviewService {
 
         Review reviewRes = reviewRepository.save(review);
 
-        ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toEntityByReview(reviewRes);
+        ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toReviewResByReview(reviewRes);
 
         return res;
     }
@@ -140,7 +150,7 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public ReviewDTO.ReviewRes getReviewByReviewId(Long id){
         Review review = reviewRepository.findById(id).orElseThrow(()->new IllegalArgumentException("리뷰가 존재하지 않습니다!!!!!"));
-        return new ReviewDTO.ReviewRes().toEntityByReview(review);
+        return new ReviewDTO.ReviewRes().toReviewResByReview(review);
     }
 
     public Resource getImage(String fileName){
