@@ -12,7 +12,8 @@ public class ReviewImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="review_image_id")
     private Long id;
-    private String path;
+    private String url;
+    private String name;
 
     @ManyToOne
     @JoinColumn(name = "review_id")
@@ -20,9 +21,10 @@ public class ReviewImage {
 
 
     @Builder
-    private ReviewImage(String path, Review review){
-        this.path = path;
+    private ReviewImage(String name, String url, Review review){
+        this.name = name;
         this.review = review;
+        this.url = url;
         review.getReviewImages().add(this);
     }
 }

@@ -13,16 +13,18 @@ public class ReceiptImage {
     @Column(name = "receipt_image_id")
     private Long id;
 
-    private String path;
+    private String name;
+    private String url;
 
     @ManyToOne
     @JoinColumn(name = "review_id")
     Review review;
 
     @Builder
-    private ReceiptImage(String path, Review review){
-        this.path = path;
+    private ReceiptImage(String url, Review review, String name){
+        this.url = url;
         this.review = review;
+        this.name = name;
         review.setReceiptImage(this);
     }
 }
