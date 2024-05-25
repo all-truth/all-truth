@@ -2,7 +2,7 @@
   <div class="card shadow-sm">
     <div class="card-body">
       <router-link :to="`/review/${review.id}`">
-        <span class="img" :style="{backgroundImage: `url(${review.images.length > 0 ? review.images[0] : '/default_review_img.png'})`}"></span>
+        <span class="img" :style="{backgroundImage: `url(${review.images.length > 0 ? review.images[0].url : '/default_review_img.png'})`}"></span>
         <p class="card-text">{{ handleText.sliceText(review.title) }}</p>
       </router-link>
       <div class="d-flex justify-content-between align-items-center py-3">
