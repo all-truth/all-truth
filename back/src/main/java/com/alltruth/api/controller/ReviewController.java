@@ -5,18 +5,13 @@ import com.alltruth.api.service.FileUploadService;
 import com.alltruth.api.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -27,9 +22,11 @@ public class ReviewController {
 
     @PostMapping("/review")
     public ResponseEntity writeReview(@RequestPart("reviewReq") ReviewDTO.ReviewReq reviewReq,
-                            @RequestPart("images") MultipartFile[] images,
-                            @RequestPart("receiptImage") MultipartFile receiptImage) {
-
+                            @RequestPart(value = "images", required = false) MultipartFile[] images,
+                            @RequestPart(value = "receiptImage", required = false) MultipartFile receiptImage) {
+        System.out.println("controller::: ");
+        System.out.println(images);
+        System.out.println(receiptImage);
         reviewService.writeReview(reviewReq, images, receiptImage);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -38,8 +35,8 @@ public class ReviewController {
     @PutMapping("/review/{id}")
     public ResponseEntity<ReviewDTO.ReviewRes> updateReview(@PathVariable("id") Long id,
                              @RequestPart("reviewReq") ReviewDTO.ReviewReq reviewReq,
-                             @RequestPart("images") MultipartFile[] images,
-                             @RequestPart("receiptImage") MultipartFile receiptImage){
+                             @RequestPart(value = "images", required = false) MultipartFile[] images,
+                             @RequestPart(value = "receiptImage", required = false) MultipartFile receiptImage){
 
         ReviewDTO.ReviewRes updatedReview = reviewService.updateReview(id, reviewReq, images, receiptImage);
         return ResponseEntity.ok(updatedReview);
@@ -49,7 +46,7 @@ public class ReviewController {
     public ResponseEntity deleteReview(@PathVariable("id") Long id){
         reviewService.deleteReview(id);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/reviews")
