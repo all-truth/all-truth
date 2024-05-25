@@ -96,6 +96,15 @@ public class ReviewService {
 
     @Transactional
     public void deleteReview(Long reviewId){
+
+        User user = userRepository.findById(SecurityConfig.getUserId())
+                .orElseThrow(()->new RuntimeException("유저 정보가 없습니다.!"));
+
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(()->new IllegalArgumentException("해당 리뷰가 존재하지 않습니다!"));
+
+        if(user.getId() != review.getUser().getId()) throw new IllegalArgumentException("리뷰 작성자가 다릅니다!");
+
         reviewRepository.deleteById(reviewId);
     }
 
@@ -172,5 +181,6 @@ public class ReviewService {
         Resource res = fileUploadUtil.loadAsResource(fileName);
         return res;
     }
+
 
 }
