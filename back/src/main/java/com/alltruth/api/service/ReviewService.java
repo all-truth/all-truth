@@ -35,6 +35,7 @@ public class ReviewService {
     public void writeReview(ReviewDTO.ReviewReq reviewReq,
                             MultipartFile[] images,
                             MultipartFile receiptImage){
+
         User user = userRepository.findById(SecurityConfig.getUserId())
                 .orElseThrow(()->new RuntimeException("유저 정보가 없습니다.!"));
 
@@ -107,9 +108,23 @@ public class ReviewService {
                 .orElseThrow(()->new RuntimeException("유저 정보가 없습니다.!"));
 
 
+
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(()->new IllegalArgumentException("해당 리뷰가 존재하지 않습니다!"));
 
+        if(user.getId() != review.getUser().getId()) throw new IllegalArgumentException("리뷰 작성자가 다릅니다!");
+
+        // 기존에 있던 이미지 파일 삭제
+        review.getReviewImages().forEach((reviewImage)->{
+            fileUploadUtil.delete(reviewImage.getName());
+        });
+        if(review.getReceiptImage() != null)  fileUploadUtil.delete(review.getReceiptImage().getName());
+
+        // 리뷰 엔티티 업데이트
+        review.update(reviewReq.getTitle(),
+                reviewReq.getContent(),
+                reviewReq.getStoreName(),
+                reviewReq.getRegion());
 
         // 리뷰 이미지들 파일 생성
         if(images != null){
