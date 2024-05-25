@@ -2,6 +2,8 @@
   <div class="container">
     <button @click="goBack" class="previous carousel-control-prev-icon px-4 my-4" aria-hidden="true"></button>
     <div class="row featurette">
+
+      <!-- 리뷰 상세 정보 -->
       <div class="col-md-7">
         <h2 class="featurette-heading fw-normal lh-1">{{ state.review.title }}</h2>
         <div class="my-4">
@@ -9,12 +11,14 @@
           <span class="text-body-secondary">{{ state.review.region }}</span>
         </div>
         <div class="col-md-5">
+          <span class="img" :style="{backgroundImage: `url(${state.review.receiptImage !== null ? state.review.receiptImage : '/default_review_img.png'})`}"></span>
           <img src="/default_review_img.png" alt="" width="250px" height="250px">
           <small class="receipt_name text-body-secondary">인증 영수증</small>
         </div>
         <p class="lead my-5">{{ state.review.content }}</p>
       </div>
 
+      <!-- 리뷰 이미지 -->
       <div class="col-md-5">
         <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
           <div class="carousel-indicators">
@@ -28,13 +32,21 @@
             <Image v-for="(image, idx) in state.review.images" :key="image.id" :image="image" :class="{ active: idx === 0 }" />
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="prev carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
           </button>
           <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="next carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
           </button>
+        </div>
+      </div>
+
+      <!-- 댓글 -->
+      <div class="my-3 p-3 bg-body rounded shadow-sm">
+        <h6 class="border-bottom pb-2 mb-0">Comments</h6>
+        <div class="d-flex text-body-secondary pt-3" v-for="comment in state.comments" :key="comment.commentId">
+          <Comment :comment="comment"/>
         </div>
       </div>
 
@@ -47,11 +59,13 @@ import { useRouter, useRoute } from 'vue-router';
 import { onMounted, reactive } from 'vue';
 import axios from 'axios'
 import Image from './Image.vue'
+import Comment from './Comment.vue'
 
 export default {
   name: 'Review',
   components: {
-    Image
+    Image,
+    Comment,
   },
   setup() {
     const route = useRoute();
@@ -60,17 +74,37 @@ export default {
     const state = reactive({
       review: {
         images: []
+      },
+      comments: []
+    })
+
+    onMounted(async () => {
+      try {
+        const reviewRes = await axios.get(`/api/review/${reviewId}`);
+        state.review = reviewRes.data;
+
+        const commentRes = await axios.get(`/api/review/${reviewId}/comment`);
+        state.comments = commentRes.data;
+
+      } catch (error) {
+        console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
       }
     })
 
-    onMounted(() => {
-      axios.get(`/api/review/${reviewId}`).then((res) => {
-        console.log(res.data);
-        state.review = res.data;
-      }).catch((error) => {
-        console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
-      });
-    })
+    // onMounted(() => {
+    //   axios.get(`/api/review/${reviewId}`).then((res) => {
+    //     console.log(res.data);
+    //     state.review = res.data;
+    //   }).catch((error) => {
+    //     console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
+    //   });
+
+    //   axios.get(`/api/review/${reviewId}/comment`).then((res) => {
+    //     console.log(res.data);
+    //   }).catch((error) => {
+    //     console.error('댓글 조회 중 에러가 발생했습니다. ', error);
+    //   });
+    // })
     
     /**
      * 이전 페이지로 이동
@@ -111,4 +145,7 @@ export default {
   color: cadetblue;
 }
 
+.prev, .next {
+  background-color: black;
+}
 </style>
