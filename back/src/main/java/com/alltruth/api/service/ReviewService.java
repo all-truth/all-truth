@@ -105,6 +105,8 @@ public class ReviewService {
 
         if(user.getId() != review.getUser().getId()) throw new IllegalArgumentException("리뷰 작성자가 다릅니다!");
 
+        deleteImageFiles(review);
+
         reviewRepository.deleteById(reviewId);
     }
 
@@ -124,10 +126,7 @@ public class ReviewService {
         if(user.getId() != review.getUser().getId()) throw new IllegalArgumentException("리뷰 작성자가 다릅니다!");
 
         // 기존에 있던 이미지 파일 삭제
-        review.getReviewImages().forEach((reviewImage)->{
-            fileUploadUtil.delete(reviewImage.getName());
-        });
-        if(review.getReceiptImage() != null)  fileUploadUtil.delete(review.getReceiptImage().getName());
+        deleteImageFiles(review);
 
         // 리뷰 엔티티 업데이트
         review.update(reviewReq.getTitle(),
@@ -180,6 +179,13 @@ public class ReviewService {
     public Resource getImage(String fileName){
         Resource res = fileUploadUtil.loadAsResource(fileName);
         return res;
+    }
+
+    public void deleteImageFiles(Review review){
+        review.getReviewImages().forEach((reviewImage)->{
+            fileUploadUtil.delete(reviewImage.getName());
+        });
+        if(review.getReceiptImage() != null)  fileUploadUtil.delete(review.getReceiptImage().getName());
     }
 
 
