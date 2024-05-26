@@ -30,6 +30,8 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomDeniedHandler customDeniedHandler;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         // 인증 위임 객체
@@ -37,15 +39,23 @@ public class SecurityConfig {
         http.csrf((csrfConfig) -> csrfConfig.disable())
                 .addFilter(corsFilter)
                 .addFilter(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider))// authenticationManager를 넣어줘야함 로그인을 진행하는 매니저임
-                .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, jwtTokenProvider))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, jwtTokenProvider, customDeniedHandler))
                 .sessionManagement((sessionPolicy)->sessionPolicy.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin((form) -> form.disable())
                 .httpBasic((basic)->basic.disable())
+                // 커스텀 에러 추가
+                .exceptionHandling(config->{
+                    // 인증 커스텀 에러
+                    config.authenticationEntryPoint(customAuthenticationEntryPoint);
+                    // 인가 커스텀 에러
+                    config.accessDeniedHandler(customDeniedHandler);
+                })
                 .authorizeHttpRequests((request)-> {
                     request.requestMatchers("/review").authenticated();
                     request.requestMatchers(HttpMethod.PUT,"/review/**").authenticated();
                     request.requestMatchers(HttpMethod.POST,"/review/**").authenticated();
                     request.requestMatchers(HttpMethod.DELETE,"/review/**").authenticated();
+                    request.requestMatchers("/user").authenticated();
                     request.anyRequest().permitAll();
                 });
 

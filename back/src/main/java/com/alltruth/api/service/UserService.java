@@ -1,5 +1,7 @@
 package com.alltruth.api.service;
 
+import com.alltruth.api.config.common.exceptions.ErrorCode;
+import com.alltruth.api.config.common.exceptions.GlobalException;
 import com.alltruth.api.config.security.SecurityConfig;
 import com.alltruth.api.dto.UserDTO;
 import com.alltruth.api.entity.User;
@@ -17,7 +19,7 @@ public class UserService {
     @Transactional
     public UserDTO.UserJoinRes join(UserDTO.UserJoinReq userJoinReq){
         User checkUser = userRepository.findByLoginId(userJoinReq.getLoginId()).orElse(null);
-        if(checkUser != null) new IllegalArgumentException("아이디가 중복 됐습니다!");
+        if(checkUser != null) new GlobalException(ErrorCode.ID_ALREADY_EXIST);
         System.out.println(userJoinReq);
         User user = User.builder()
                 .loginId(userJoinReq.getLoginId())
@@ -33,7 +35,7 @@ public class UserService {
     }
 
     public UserDTO.UserInfoRes getUserInfo(){
-        User user = userRepository.findById(SecurityConfig.getUserId()).orElseThrow(()->new IllegalArgumentException("유저 정보가 없습니다!"));
+        User user = userRepository.findById(SecurityConfig.getUserId()).orElseThrow(()->new GlobalException(ErrorCode.USER_NOT_FOUND));
         return UserDTO.UserInfoRes.builder()
                 .id(user.getId())
                 .nickname(user.getNickname())

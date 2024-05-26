@@ -1,5 +1,7 @@
 package com.alltruth.api.service;
 
+import com.alltruth.api.config.common.exceptions.ErrorCode;
+import com.alltruth.api.config.common.exceptions.GlobalException;
 import com.alltruth.api.config.file.FileUploadUtil;
 import com.alltruth.api.config.security.SecurityConfig;
 import com.alltruth.api.dto.ReviewDTO;
@@ -37,7 +39,7 @@ public class ReviewService {
                             MultipartFile receiptImage){
 
         User user = userRepository.findById(SecurityConfig.getUserId())
-                .orElseThrow(()->new RuntimeException("유저 정보가 없습니다.!"));
+                .orElseThrow(()->new GlobalException(ErrorCode.USER_NOT_FOUND));
 
 
         Review review = Review.builder()
@@ -98,12 +100,12 @@ public class ReviewService {
     public void deleteReview(Long reviewId){
 
         User user = userRepository.findById(SecurityConfig.getUserId())
-                .orElseThrow(()->new RuntimeException("유저 정보가 없습니다.!"));
+                .orElseThrow(()->new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(()->new IllegalArgumentException("해당 리뷰가 존재하지 않습니다!"));
+                .orElseThrow(()->new GlobalException(ErrorCode.REVIEW_NOT_FOUND));
 
-        if(user.getId() != review.getUser().getId()) throw new IllegalArgumentException("리뷰 작성자가 다릅니다!");
+        if(user.getId() != review.getUser().getId()) throw new GlobalException(ErrorCode.REVIEW_NOT_AUTHOR);
 
         deleteImageFiles(review);
 
@@ -116,14 +118,14 @@ public class ReviewService {
                                             MultipartFile[] images,
                                             MultipartFile receiptImage){
         User user = userRepository.findById(SecurityConfig.getUserId())
-                .orElseThrow(()->new RuntimeException("유저 정보가 없습니다.!"));
+                .orElseThrow(()->new GlobalException(ErrorCode.USER_NOT_FOUND));
 
 
 
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(()->new IllegalArgumentException("해당 리뷰가 존재하지 않습니다!"));
+                .orElseThrow(()->new GlobalException(ErrorCode.REVIEW_NOT_FOUND));
 
-        if(user.getId() != review.getUser().getId()) throw new IllegalArgumentException("리뷰 작성자가 다릅니다!");
+        if(user.getId() != review.getUser().getId()) throw new GlobalException(ErrorCode.REVIEW_NOT_AUTHOR);
 
         // 기존에 있던 이미지 파일 삭제
         deleteImageFiles(review);
@@ -172,7 +174,7 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public ReviewDTO.ReviewRes getReviewByReviewId(Long id){
-        Review review = reviewRepository.findById(id).orElseThrow(()->new IllegalArgumentException("리뷰가 존재하지 않습니다!!!!!"));
+        Review review = reviewRepository.findById(id).orElseThrow(()->new GlobalException(ErrorCode.REVIEW_NOT_FOUND));
         return new ReviewDTO.ReviewRes().toReviewResByReview(review);
     }
 
