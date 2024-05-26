@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { onMounted, reactive } from 'vue';
+import { onMounted, reactive } from 'vue'
 import Reviews from '../views/review/Reviews.vue'
 import axios from 'axios'
 

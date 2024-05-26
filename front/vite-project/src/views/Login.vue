@@ -179,7 +179,6 @@ export default {
           }).catch((error) => {
             console.error('사용자 정보를 조회하는데 실패했습니다.', error);
           });
-
         } else {
           window.alert('로그인 토큰을 받아오는데 실패했습니다.');
         }
