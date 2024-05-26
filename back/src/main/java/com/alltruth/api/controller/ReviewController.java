@@ -56,15 +56,15 @@ public class ReviewController {
     }
 
     @GetMapping("/review/img/{filename}")
-    public ResponseEntity<Resource> getImg(@PathVariable("filename") String fileName) throws MalformedURLException {
+    public ResponseEntity<Resource> getImage(@PathVariable("filename") String fileName) throws MalformedURLException {
         Resource res = reviewService.getImage(fileName);
 
 
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(res);
     }
 
-    @GetMapping("/review/{reviewid}")
-    public ResponseEntity<ReviewDTO.ReviewRes> getReviewByReviewId(@PathVariable("reviewid") Long id){
+    @GetMapping("/review/{id}")
+    public ResponseEntity<ReviewDTO.ReviewRes> getReviewByReviewId(@PathVariable("id") Long id){
         ReviewDTO.ReviewRes review = reviewService.getReviewByReviewId(id);
         return ResponseEntity.ok(review);
     }

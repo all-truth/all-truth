@@ -1,5 +1,7 @@
 package com.alltruth.api.service;
 
+import com.alltruth.api.config.common.exceptions.ErrorCode;
+import com.alltruth.api.config.common.exceptions.GlobalException;
 import com.alltruth.api.config.security.SecurityConfig;
 import com.alltruth.api.dto.CommentDTO;
 import com.alltruth.api.entity.Comment;
@@ -41,13 +43,13 @@ public class CommentService {
     @Transactional
     public CommentDTO.CommentRes writeComment(Long reviewId, CommentDTO.CommentReq req){
         Long userId = SecurityConfig.getUserId();
-        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("해당 유저 정보가 존재하지 않습니다!"));
+        User user = userRepository.findById(userId).orElseThrow(()->new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         System.out.println(user);
         System.out.println(user.getId());
 
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(()->new IllegalArgumentException("해당 리뷰가 존재하지 않습니다!!"));
+                .orElseThrow(()->new GlobalException(ErrorCode.REVIEW_NOT_FOUND));
 
         Comment comment = Comment.builder()
                 .content(req.getContent())
@@ -68,11 +70,11 @@ public class CommentService {
     @Transactional
     public CommentDTO.CommentRes updateComment(Long reviewId, CommentDTO.CommentReq req){
         Long userId = SecurityConfig.getUserId();
-        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("해당 유저 정보가 존재하지 않습니다!"));
+        User user = userRepository.findById(userId).orElseThrow(()->new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-        Comment comment = commentRepository.findById(reviewId).orElseThrow(()-> new IllegalArgumentException("해당 댓글 정보가 존재하지 않습니다!"));
+        Comment comment = commentRepository.findById(reviewId).orElseThrow(()-> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if(comment.getUser().getId() != user.getId()) throw new IllegalArgumentException("해당 댓글 작성자가 일치하지 않습니다!");
+        if(comment.getUser().getId() != user.getId()) throw new GlobalException(ErrorCode.COMMENT_NOT_AUTHOR);
 
         comment.updateComment(req.getContent());
         commentRepository.save(comment);
@@ -87,11 +89,11 @@ public class CommentService {
 
     public void deleteComment(Long reviewId){
         Long userId = SecurityConfig.getUserId();
-        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("해당 유저 정보가 존재하지 않습니다!"));
+        User user = userRepository.findById(userId).orElseThrow(()->new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-        Comment comment = commentRepository.findById(reviewId).orElseThrow(()-> new IllegalArgumentException("해당 댓글 정보가 존재하지 않습니다!"));
+        Comment comment = commentRepository.findById(reviewId).orElseThrow(()-> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if(comment.getUser().getId() != user.getId()) throw new IllegalArgumentException("해당 댓글 작성자가 일치하지 않습니다!");
+        if(comment.getUser().getId() != user.getId()) throw new GlobalException(ErrorCode.COMMENT_NOT_AUTHOR);
 
         commentRepository.delete(comment);
     }
