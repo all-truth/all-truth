@@ -27,6 +27,12 @@ public class Comment {
         this.content = content;
         this.user = user;
         this.review = review;
+
+        user.getCommentList().add(this);
         review.getComments().add(this);
+    }
+
+    public void updateComment(String content){
+        this.content = content;
     }
 }
