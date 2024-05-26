@@ -1,5 +1,5 @@
-import axios from 'axios'
-import store from '../store/index'
+import axios from 'axios';
+import store from '../store/index';
 
 // axios 인스턴스 생성
 const instance = axios.create({
@@ -8,27 +8,30 @@ const instance = axios.create({
 });
 
 // request 인터셉터 추가
-instance.interceptors.request.use((config) => {
-  const accessToken = localStorage.getItem('accessToken');
+instance.interceptors.request.use(
+  (config) => {
+    const accessToken = localStorage.getItem('accessToken');
 
-  if(accessToken) {
-    config.headers.Authorization = accessToken;
+    if (accessToken) {
+      config.headers.Authorization = accessToken;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+);
 
 // response 인터셉터 추가
 instance.interceptors.response.use(
-  response => {
+  (response) => {
     return response;
   },
-  error => {
+  (error) => {
     const { status } = error.response;
 
-    if(status === 401) {
+    if (status === 401) {
       store.dispatch('logout');
     }
 
