@@ -172,9 +172,7 @@ export default {
           localStorage.setItem('accessToken', accessToken);
           window.alert('로그인 성공!');
 
-          instance.get('/api/user').then((res) => {
-            // Vuex에서 사용자 정보 저장
-            store.dispatch('setUser', res.data);
+          instance.get('/api/user').then(() => {
             // 초기화 작업 수행
             store.dispatch('initializeAuthentication');
             router.push({path: '/'});

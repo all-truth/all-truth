@@ -5,26 +5,33 @@
     </svg>
     <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
       <div class="d-flex justify-content-between">
-        <strong class="text-gray-dark">{{ comment.nickName }}</strong>
-        <a href="#" v-if="user !== null && comment.userId === user.id">삭제</a>
+        <strong class="text-gray-dark">{{ comment.nickname }}</strong>
+        <a href="#" v-if="state.user !== null && comment.userId === state.user.id">삭제</a>
       </div>
       <span class="d-block">{{ comment.content }}</span>
     </div>
 </template>
 
 <script>
-import store from '../../store/index'
+import { watchEffect, reactive } from 'vue';
 
 export default {
   name: 'Comment',
   props: {
-    comment: Object
+    comment: Object,
+    user: Object
   },
-  setup() {
-    const user = store.state.user;
+  setup(props) {
+    const state = reactive({
+      user: {}
+    });
+
+    watchEffect(() => {
+      state.user = props.user;
+    });
 
     return {
-      user,
+      state
     }
   }
 }

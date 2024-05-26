@@ -46,7 +46,7 @@
       <div class="my-3 p-3 bg-body rounded shadow-sm">
         <h6 class="border-bottom pb-2 mb-0">Comments</h6>
         <div class="d-flex text-body-secondary pt-3" v-for="comment in state.comments" :key="comment.commentId">
-          <Comment :comment="comment"/>
+          <Comment :comment="comment" :user="state.user"/>
         </div>
       </div>
 
@@ -58,6 +58,7 @@
 import { useRouter, useRoute } from 'vue-router';
 import { onMounted, reactive } from 'vue';
 import axios from 'axios'
+import instance from '../../api/axios'
 import Image from './Image.vue'
 import Comment from './Comment.vue'
 
@@ -75,8 +76,9 @@ export default {
       review: {
         images: []
       },
-      comments: []
-    })
+      comments: [],
+      user: {}
+    });
 
     onMounted(async () => {
       try {
@@ -86,25 +88,13 @@ export default {
         const commentRes = await axios.get(`/api/review/${reviewId}/comment`);
         state.comments = commentRes.data;
 
+        const userRes = await instance.get('/api/user');
+        state.user = userRes.data;
+
       } catch (error) {
         console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
       }
     })
-
-    // onMounted(() => {
-    //   axios.get(`/api/review/${reviewId}`).then((res) => {
-    //     console.log(res.data);
-    //     state.review = res.data;
-    //   }).catch((error) => {
-    //     console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
-    //   });
-
-    //   axios.get(`/api/review/${reviewId}/comment`).then((res) => {
-    //     console.log(res.data);
-    //   }).catch((error) => {
-    //     console.error('댓글 조회 중 에러가 발생했습니다. ', error);
-    //   });
-    // })
     
     /**
      * 이전 페이지로 이동
