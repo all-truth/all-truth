@@ -64,4 +64,35 @@ public class CommentService {
                 .content(commentEntity.getContent())
                 .build();
     }
+
+    @Transactional
+    public CommentDTO.CommentRes updateComment(Long reviewId, CommentDTO.CommentReq req){
+        Long userId = SecurityConfig.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("해당 유저 정보가 존재하지 않습니다!"));
+
+        Comment comment = commentRepository.findById(reviewId).orElseThrow(()-> new IllegalArgumentException("해당 댓글 정보가 존재하지 않습니다!"));
+
+        if(comment.getUser().getId() != user.getId()) throw new IllegalArgumentException("해당 댓글 작성자가 일치하지 않습니다!");
+
+        comment.updateComment(req.getContent());
+        commentRepository.save(comment);
+
+        return CommentDTO.CommentRes.builder()
+                .userId(user.getId())
+                .nickname(user.getNickname())
+                .id(comment.getId())
+                .content(comment.getContent())
+                .build();
+    }
+
+    public void deleteComment(Long reviewId){
+        Long userId = SecurityConfig.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("해당 유저 정보가 존재하지 않습니다!"));
+
+        Comment comment = commentRepository.findById(reviewId).orElseThrow(()-> new IllegalArgumentException("해당 댓글 정보가 존재하지 않습니다!"));
+
+        if(comment.getUser().getId() != user.getId()) throw new IllegalArgumentException("해당 댓글 작성자가 일치하지 않습니다!");
+
+        commentRepository.delete(comment);
+    }
 }
