@@ -18,8 +18,8 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Transactional
     public UserDTO.UserJoinRes join(UserDTO.UserJoinReq userJoinReq){
-        User checkUser = userRepository.findByLoginId(userJoinReq.getLoginId()).orElse(null);
-        if(checkUser != null) throw new GlobalException(ErrorCode.ID_ALREADY_EXIST);
+
+        if(userRepository.findByLoginId(userJoinReq.getLoginId()).isPresent()) throw new GlobalException(ErrorCode.ID_ALREADY_EXIST);
 
         User user = User.builder()
                 .loginId(userJoinReq.getLoginId())
