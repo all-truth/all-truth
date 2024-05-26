@@ -40,7 +40,7 @@
           
           <div class="login__box">
             <i class='bx bx-pencil login__icon'></i>
-            <input type="text" placeholder="Nickname" class="login__input" v-model="signUpState.form.nickName">
+            <input type="text" placeholder="Nickname" class="login__input" v-model="signUpState.form.nickname">
           </div>
           
           <div class="login__box">
@@ -69,6 +69,7 @@
 <script>
 import { reactive, ref, computed, watchEffect } from 'vue'
 import axios from 'axios'
+import instance from '../api/axios'
 import router from '../router/index'
 import store from '../store/index'
 
@@ -81,7 +82,7 @@ export default {
     const signUpState = reactive({
       form: {
         loginId: "",
-        nickName: "",
+        nickname: "",
         password: "",
         passwordConfirm: ""
       },
@@ -124,7 +125,7 @@ export default {
      * 회원가입
      */
     const register = () => {
-      const isFilled = signUpState.form.loginId && signUpState.form.nickName && 
+      const isFilled = signUpState.form.loginId && signUpState.form.nickname && 
       signUpState.form.password && signUpState.form.passwordConfirm;
 
       if(!isFilled) {
@@ -166,12 +167,12 @@ export default {
 
       axios.post('/api/login', signInState.form).then((res) => {
         const accessToken = res.headers["authorization"];
-
+        
         if(accessToken) {
           localStorage.setItem('accessToken', accessToken);
           window.alert('로그인 성공!');
 
-          axios.get('/api/user').then((res) => {
+          instance.get('/api/user').then((res) => {
             // Vuex에서 사용자 정보 저장
             store.dispatch('setUser', res.data);
             // 초기화 작업 수행
