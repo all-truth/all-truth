@@ -3,7 +3,8 @@ import store from '../store/index'
 
 // axios 인스턴스 생성
 const instance = axios.create({
-  baseURL: 'http://localhost:8080',
+  // Vite 개발 서버의 주소로 설정
+  baseURL: '/',
 });
 
 // request 인터셉터 추가
@@ -15,7 +16,7 @@ instance.interceptors.request.use((config) => {
   }
 
   return config;
-}).catch((error) => {
+}, (error) => {
   return Promise.reject(error);
 });
 
