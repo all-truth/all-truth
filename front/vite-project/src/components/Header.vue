@@ -22,18 +22,10 @@
           </form>
 
           <div class="review-write px-5">
-            <a
-              href="#"
-              class="nav-link text-secondary text-center"
-              v-if="isAuthenticated"
-            >
-              <img
-                src="/write_review.png"
-                alt="리뷰 작성 이미지"
-                class="review-write-image"
-              />
+            <router-link to="/write" class="nav-link text-secondary text-center" v-if="isAuthenticated">
+              <img src="/write_review.png" alt="리뷰 작성 이미지" class="review-write-image">
               <div>리뷰 작성</div>
-            </a>
+            </router-link>
           </div>
 
           <div class="text-end">
@@ -139,8 +131,10 @@ export default {
   height: 30px;
   margin-bottom: 5px;
   margin: auto;
+}
 
 .dropdown {
   cursor: pointer;
   text-align: center !important;
+}
 </style>
