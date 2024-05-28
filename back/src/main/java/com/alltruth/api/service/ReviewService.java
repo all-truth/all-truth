@@ -34,7 +34,7 @@ public class ReviewService {
 
 
     @Transactional
-    public void writeReview(ReviewDTO.ReviewReq reviewReq,
+    public ReviewDTO.ReviewRes writeReview(ReviewDTO.ReviewReq reviewReq,
                             MultipartFile[] images,
                             MultipartFile receiptImage){
 
@@ -82,6 +82,9 @@ public class ReviewService {
         }
 
         reviewRepository.save(review);
+        ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toReviewResByReview(review);
+
+        return res;
     }
 
     @Transactional(readOnly = true)
@@ -176,6 +179,12 @@ public class ReviewService {
     public ReviewDTO.ReviewRes getReviewByReviewId(Long id){
         Review review = reviewRepository.findById(id).orElseThrow(()->new GlobalException(ErrorCode.REVIEW_NOT_FOUND));
         return new ReviewDTO.ReviewRes().toReviewResByReview(review);
+    }
+
+    public void searchReviewByKeyword(String keyword){
+        List<Review> reviewList = reviewRepository.findByTitleOrContent(keyword);
+
+        System.out.println(reviewList.size());
     }
 
     public Resource getImage(String fileName){
