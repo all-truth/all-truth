@@ -11,9 +11,9 @@
 </template>
 
 <script>
-import { onMounted, reactive } from 'vue';
-import Reviews from '../views/review/Reviews.vue';
-import axios from 'axios';
+import { onMounted, reactive } from 'vue'
+import Reviews from '../views/review/Reviews.vue'
+import axios from 'axios'
 
 export default {
   name: 'Content',
@@ -22,25 +22,24 @@ export default {
   },
   setup() {
     const state = reactive({
-      reviews: [],
-    });
+      reviews: []
+    })
 
     onMounted(() => {
-      axios
-        .get('/api/reviews')
-        .then((res) => {
-          state.reviews = res.data;
-        })
-        .catch((error) => {
-          console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
-        });
+      axios.get('/api/reviews').then((res) => {
+        state.reviews = res.data;
+      }).catch((error) => {
+        console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
+      });
     });
 
     return {
       state,
-    };
-  },
-};
+    }
+  }
+}
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

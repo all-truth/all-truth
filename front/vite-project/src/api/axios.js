@@ -1,5 +1,5 @@
-import axios from 'axios';
-import store from '../store/index';
+import axios from 'axios'
+import store from '../store/index'
 
 // axios 인스턴스 생성
 const instance = axios.create({
