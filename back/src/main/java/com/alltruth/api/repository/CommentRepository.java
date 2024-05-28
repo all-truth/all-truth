@@ -1,5 +1,6 @@
 package com.alltruth.api.repository;
 
+import com.alltruth.api.dto.CommentDTO;
 import com.alltruth.api.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
