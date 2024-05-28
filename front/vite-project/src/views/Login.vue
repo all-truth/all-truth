@@ -204,5 +204,5 @@ export default {
 </script>
 
 <style>
-  @import '../assets/login.css'
+  @import '../assets/login.css';
 </style>

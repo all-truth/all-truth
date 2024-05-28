@@ -115,8 +115,9 @@ export default {
 
     // 댓글 삭제 반영
     const removeComment = (commentId) => {
-      state.comments = state.comments.filter(comment => comment.commentId != commentId);
+      state.comments = state.comments.filter(comment => comment.id !== commentId);
     }
+
     
     /**
      * 이전 페이지로 이동
