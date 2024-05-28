@@ -181,10 +181,14 @@ public class ReviewService {
         return new ReviewDTO.ReviewRes().toReviewResByReview(review);
     }
 
-    public void searchReviewByKeyword(String keyword){
+    @Transactional(readOnly = true)
+    public List<ReviewDTO.ReviewRes> searchReviewByKeyword(String keyword){
         List<Review> reviewList = reviewRepository.findByTitleOrContent(keyword);
+        List<ReviewDTO.ReviewRes> res = reviewList.stream()
+                .map((review)-> new ReviewDTO.ReviewRes().toReviewResByReview(review))
+                .toList();
 
-        System.out.println(reviewList.size());
+        return res;
     }
 
     public Resource getImage(String fileName){

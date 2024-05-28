@@ -66,8 +66,9 @@ public class ReviewController {
 
     @GetMapping("/review")
     public ResponseEntity searchReview(@RequestParam(name="search") String search){
-        reviewService.searchReviewByKeyword("내용");
-        return ResponseEntity.ok().build();
+        List<ReviewDTO.ReviewRes> res = reviewService.searchReviewByKeyword(search);
+
+        return ResponseEntity.ok().body(res);
     }
 
     @GetMapping("/review/{id}")
