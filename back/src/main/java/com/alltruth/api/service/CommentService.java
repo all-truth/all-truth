@@ -25,7 +25,10 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentDTO.CommentRes> getCommentsById(Long id){
-        List<Comment> comments = commentRepository.findAllByReviewId(id);
+        // 일반 join
+        //List<Comment> comments = commentRepository.findAllByReviewId(id);
+        // fetch join 쿼리
+        List<Comment> comments = commentRepository.findAllByReviewIdFetchJoinUser(id);
         List<CommentDTO.CommentRes> res = comments.stream().map((item) ->{
             User user = item.getUser();
             CommentDTO.CommentRes comment = CommentDTO.CommentRes.builder()
@@ -42,6 +45,8 @@ public class CommentService {
 
     @Transactional
     public CommentDTO.CommentRes writeComment(Long reviewId, CommentDTO.CommentReq req){
+
+        System.out.println("시큐리티 config 에서 가져온 user :::");
         Long userId = SecurityConfig.getUserId();
         User user = userRepository.findById(userId).orElseThrow(()->new GlobalException(ErrorCode.USER_NOT_FOUND));
 
@@ -68,11 +73,11 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDTO.CommentRes updateComment(Long reviewId, CommentDTO.CommentReq req){
+    public CommentDTO.CommentRes updateComment(Long commentId, CommentDTO.CommentReq req){
         Long userId = SecurityConfig.getUserId();
         User user = userRepository.findById(userId).orElseThrow(()->new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-        Comment comment = commentRepository.findById(reviewId).orElseThrow(()-> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(()-> new GlobalException(ErrorCode.COMMENT_NOT_FOUND));
 
         if(comment.getUser().getId() != user.getId()) throw new GlobalException(ErrorCode.COMMENT_NOT_AUTHOR);
 
