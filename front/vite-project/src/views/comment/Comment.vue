@@ -33,8 +33,8 @@ export default {
       state.user = props.user;
     });
 
-    const remove = (commentId) => {
-      instance.delete(`/api/review/comment/${commentId}`).then(() => {
+    const remove = async (commentId) => {
+      await instance.delete(`/api/review/comment/${commentId}`).then(() => {
         window.alert('리뷰가 삭제되었습니다.');
         emit('comment-removed', commentId);
       }).catch((error) => {
