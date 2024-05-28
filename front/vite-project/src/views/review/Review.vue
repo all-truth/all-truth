@@ -64,8 +64,8 @@ import { onMounted, reactive, computed } from 'vue';
 import axios from 'axios'
 import instance from '../../api/axios'
 import Image from './Image.vue'
-import Comment from './Comment.vue'
-import Write from './Write.vue'
+import Comment from '../comment/Comment.vue'
+import Write from '../comment/Write.vue'
 import store from '../../store/index'
 
 export default {
