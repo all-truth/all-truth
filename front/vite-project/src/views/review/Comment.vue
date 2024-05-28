@@ -6,7 +6,7 @@
     <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
       <div class="d-flex justify-content-between">
         <strong class="text-gray-dark">{{ comment.nickname }}</strong>
-        <button class="btn btn-danger" type="button" v-if="state.user !== null && comment.userId === state.user.id" @click="remove(comment.commentId)">삭제</button>
+        <button class="btn btn-danger" type="button" v-if="state.user !== null && comment.userId === state.user.id" @click="remove(comment.id)">삭제</button>
       </div>
       <span class="d-block">{{ comment.content }}</span>
     </div>
