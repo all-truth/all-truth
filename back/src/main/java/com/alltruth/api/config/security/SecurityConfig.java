@@ -51,7 +51,7 @@ public class SecurityConfig {
                     config.accessDeniedHandler(customDeniedHandler);
                 })
                 .authorizeHttpRequests((request)-> {
-                    request.requestMatchers("/review").authenticated();
+                    request.requestMatchers(HttpMethod.POST,"/review").authenticated();
                     request.requestMatchers(HttpMethod.PUT,"/review/**").authenticated();
                     request.requestMatchers(HttpMethod.POST,"/review/**").authenticated();
                     request.requestMatchers(HttpMethod.DELETE,"/review/**").authenticated();
@@ -63,22 +63,21 @@ public class SecurityConfig {
     }
 
     public static Long getUserId() {
+        // 세션을 통해 영속성 컨텍스트에 접근 필터에서 만든 user와 여기서 lazy.load할 떄 user
         Authentication at = SecurityContextHolder.getContext().getAuthentication();
-
         if(at == null || at.getPrincipal() == null) throw new RuntimeException("사용자가 없습니다!");
         PrincipalDetails pd = (PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         User user = pd.getUser();
+
         return user.getId();
     }
 
     public static User getUser() {
         Authentication at = SecurityContextHolder.getContext().getAuthentication();
-
         if(at == null || at.getPrincipal() == null) throw new RuntimeException("사용자가 없습니다!");
         PrincipalDetails pd = (PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         User user = pd.getUser();
+
         return user;
     }
 
