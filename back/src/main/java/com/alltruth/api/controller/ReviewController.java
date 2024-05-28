@@ -27,9 +27,10 @@ public class ReviewController {
         System.out.println("controller::: ");
         System.out.println(images);
         System.out.println(receiptImage);
-        reviewService.writeReview(reviewReq, images, receiptImage);
+        ReviewDTO.ReviewRes res = reviewService.writeReview(reviewReq, images, receiptImage);
+        // 리뷰 작성하면 작성된 리뷰
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
     @PutMapping("/review/{id}")
@@ -61,6 +62,12 @@ public class ReviewController {
 
 
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(res);
+    }
+
+    @GetMapping("/review")
+    public ResponseEntity searchReview(@RequestParam(name="search") String search){
+        reviewService.searchReviewByKeyword("내용");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/review/{id}")
