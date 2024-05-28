@@ -31,7 +31,8 @@ instance.interceptors.response.use(
   (error) => {
     const { status } = error.response;
 
-    if (status === 401) {
+    // 토큰이 유효하지 않을 경우 로그아웃
+    if(status === 401 || status === 403) {
       store.dispatch('logout');
     }
 
