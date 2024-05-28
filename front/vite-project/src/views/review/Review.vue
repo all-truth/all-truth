@@ -12,7 +12,7 @@
         </div>
         <div class="col-md-5">
           <span class="img" :style="{backgroundImage: `url(${state.review.receiptImage !== null ? state.review.receiptImage : '/default_review_img.png'})`}"></span>
-          <img src="/default_review_img.png" alt="" width="250px" height="250px">
+          <img :src="`${state.review.receiptImage}`" alt="" width="250px" height="250px">
           <small class="receipt_name text-body-secondary">인증 영수증</small>
         </div>
         <p class="lead my-5">{{ state.review.content }}</p>
@@ -46,7 +46,11 @@
       <div class="my-3 p-3 bg-body rounded shadow-sm">
         <h6 class="border-bottom pb-2 mb-0">Comments</h6>
         <div class="d-flex text-body-secondary pt-3" v-for="comment in state.comments" :key="comment.commentId">
-          <Comment :comment="comment" :user="state.user"/>
+          <Comment :comment="comment" :user="state.user" @comment-removed="removeComment" />
+        </div>
+        <!-- 댓글 작성 -->
+        <div v-if="isAuthenticated" class="d-flex text-body-secondary pt-3">
+          <Write :reviewId="Number(reviewId)" @comment-added="addComment" />
         </div>
       </div>
 
@@ -56,17 +60,20 @@
 
 <script>
 import { useRouter, useRoute } from 'vue-router';
-import { onMounted, reactive } from 'vue';
+import { onMounted, reactive, computed } from 'vue';
 import axios from 'axios'
 import instance from '../../api/axios'
 import Image from './Image.vue'
 import Comment from './Comment.vue'
+import Write from './Write.vue'
+import store from '../../store/index'
 
 export default {
   name: 'Review',
   components: {
     Image,
     Comment,
+    Write,
   },
   setup() {
     const route = useRoute();
@@ -79,6 +86,7 @@ export default {
       comments: [],
       user: {}
     });
+    const isAuthenticated = computed(() => store.state.isAuthenticated);
 
     onMounted(async () => {
       try {
@@ -95,6 +103,16 @@ export default {
         console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
       }
     })
+
+    // 댓글 추가 반영
+    const addComment = (newComment) => {
+      state.comments.push(newComment);
+    }
+
+    // 댓글 삭제 반영
+    const removeComment = (commentId) => {
+      state.comments = state.comments.filter(comment => comment.commentId != commentId);
+    }
     
     /**
      * 이전 페이지로 이동
@@ -106,7 +124,10 @@ export default {
     return {
       reviewId,
       state,
+      isAuthenticated,
       goBack,
+      addComment,
+      removeComment,
     }
   }
 }
