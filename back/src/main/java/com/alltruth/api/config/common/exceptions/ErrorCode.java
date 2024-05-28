@@ -32,8 +32,11 @@ public enum ErrorCode {
 
     // Review
     REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 리뷰를 찾을 수 없습니다."),
-    REVIEW_NOT_AUTHOR(HttpStatus.BAD_REQUEST, "해당 리뷰의 작성자가 아닙니다.");
+    REVIEW_NOT_AUTHOR(HttpStatus.BAD_REQUEST, "해당 리뷰의 작성자가 아닙니다."),
 
+    // Comment
+    COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 리뷰를 찾을 수 없습니다."),
+    COMMENT_NOT_AUTHOR(HttpStatus.BAD_REQUEST, "해당 리뷰의 작성자가 아닙니다.");
 
 
     private final HttpStatus status;
