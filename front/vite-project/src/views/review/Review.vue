@@ -96,8 +96,12 @@ export default {
         const commentRes = await axios.get(`/api/review/${reviewId}/comment`);
         state.comments = commentRes.data;
 
-        const userRes = await instance.get('/api/user');
-        state.user = userRes.data;
+        const accessToken = localStorage.getItem('accessToken');
+
+        if(accessToken) {
+          const userRes = await instance.get('/api/user');
+          state.user = userRes.data;
+        }
 
       } catch (error) {
         console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
