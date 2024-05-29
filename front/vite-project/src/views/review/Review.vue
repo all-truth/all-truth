@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <button @click="goBack" class="previous carousel-control-prev-icon px-4 my-4" aria-hidden="true"></button>
+    <button v-if="review.userId === state.user.id" class="review__remove btn btn-danger" @click="removeReview">삭제</button>
     <div class="row featurette">
 
       <!-- 리뷰 상세 정보 -->
@@ -126,11 +127,24 @@ export default {
       router.back();
     }
 
+    /**
+     * 리뷰 삭제
+     */
+    const removeReview = () => {
+      instance.delete(`/api/review/${reviewId}`).then(() => {
+        window.alert("리뷰가 삭제되었습니다.");
+        router.push({ path: '/' });
+      }).catch((error) => {
+        console.error("리뷰 삭제 중 에러가 발생했습니다. ", error);
+      });
+    };
+
     return {
       reviewId,
       state,
       isAuthenticated,
       goBack,
+      removeReview,
       addComment,
       removeComment,
     }
@@ -149,6 +163,11 @@ export default {
 
 .previous.carousel-control-prev-icon {
   background-image: url('data:image/svg+xml;charset=utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" fill="%23000" viewBox="0 0 10 10"%3E%3Cpath d="M5.5 0l1 1-3 3 3 3-1 1-4-4 4-4z"/%3E%3C/svg%3E'); /* 왼쪽 화살표 검정 아이콘으로 변경 */
+}
+
+.review__remove {
+  margin-top: 1rem;
+  float: right;
 }
 
 .receipt_name {
