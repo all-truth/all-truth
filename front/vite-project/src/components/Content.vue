@@ -22,11 +22,18 @@ export default {
     Reviews,
   },
   setup() {
+    const searchText = computed(() => store.state.searchText);
+    const searchResults = computed(() => store.state.searchResults);
+
     onMounted(() => {
-      store.dispatch('fetchReviews');
+      if(!searchText.value) {
+        store.dispatch('fetchReviews');
+      }
     });
 
-    const reviews = computed(() => store.getters.reviews);
+    const reviews = computed(() => {
+      return searchText.value ? searchResults.value : store.getters.reviews;
+    });
 
     return {
       reviews,

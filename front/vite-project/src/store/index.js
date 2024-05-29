@@ -4,7 +4,9 @@ import axios from '../api/axios'
 export default createStore({
   state: {
     isAuthenticated: false,
-    reviews: []
+    reviews: [],
+    searchText: '',
+    searchResults: [],
   },
   mutations: {
     setAuthentication(state, status) {
@@ -18,6 +20,12 @@ export default createStore({
     },
     addReview(state, review) {
       state.reviews.push(review);
+    },
+    setSearchText(state, text) {
+      state.searchText = text;
+    },
+    setSearchResults(state, results) {
+      state.searchResults = results;
     },
   },
   actions: {
@@ -43,6 +51,12 @@ export default createStore({
     },
     addReview({ commit }, review) {
       commit('addReview', review);
+    },
+    setSearchText({ commit }, text) {
+      commit('setSearchText', text);
+    },
+    setSearchResults({ commit }, results) {
+      commit('setSearchResults', results);
     },
   },
   getters: {
