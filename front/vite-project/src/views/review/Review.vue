@@ -1,8 +1,7 @@
 <template>
   <div class="container">
     <button @click="goBack" class="previous carousel-control-prev-icon px-4 my-4" aria-hidden="true"></button>
-    <!-- <button v-if="review.userId === state.user.id" class="review__remove btn btn-danger" @click="removeReview">삭제</button> -->
-    <button class="review__remove btn btn-danger" @click="removeReview">삭제</button>
+    <button v-if="state.review.userId === state.user.id" class="review__remove btn btn-danger" @click="removeReview">삭제</button>
     <div class="row featurette">
 
       <!-- 리뷰 상세 정보 -->

@@ -7,8 +7,8 @@
             <span class="home">All Truth</span>
           </router-link>
 
-          <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-            <input type="search" class="form-control" placeholder="Search reviews..." aria-label="Search">
+          <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" @submit.prevent="search">
+            <input type="search" class="form-control" placeholder="Search reviews..." aria-label="Search" v-model="searchText">
           </form>
           
           <div class="review-write px-5">
@@ -57,14 +57,16 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import store from '../store/index';
-import axios from 'axios'
+import axios from 'axios';
+import router from '../router/index.js';
 
 export default {
   name: 'Header',
   setup () {
     const isAuthenticated = computed(() => store.state.isAuthenticated);
+    const searchText = ref('');
 
     const logout = () => {
     //   axios.post('logout').then(() => {
@@ -78,9 +80,26 @@ export default {
       console.log('로그아웃');
     };
 
+    const search = () => {
+      store.dispatch('setSearchText', searchText.value);
+
+      if(searchText.value) {
+        axios.get(`/api/review?search=${encodeURIComponent(searchText.value)}`).then((res) => {
+          store.dispatch('setSearchResults', res.data);
+        }).catch((error) => {
+          console.error('검색 중 오류 발생 ', error);
+        })
+      } else {
+        store.dispatch('setSearchResults', []);
+      }
+      router.push({ path: '/' });
+    };
+
     return {
       isAuthenticated,
+      searchText,
       logout,
+      search,
     }
   }
 }
