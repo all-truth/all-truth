@@ -5,6 +5,7 @@ import com.alltruth.api.service.FileUploadService;
 import com.alltruth.api.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +58,7 @@ public class ReviewController {
     }
 
     @GetMapping("/review/img/{filename}")
-    public ResponseEntity<Resource> getImage(@PathVariable("filename") String fileName) throws MalformedURLException {
+    public ResponseEntity<Resource> getImage(@PathVariable("filename") String fileName) {
         Resource res = reviewService.getImage(fileName);
 
 
@@ -65,15 +66,32 @@ public class ReviewController {
     }
 
     @GetMapping("/review")
-    public ResponseEntity searchReview(@RequestParam(name="search") String search){
-        reviewService.searchReviewByKeyword("내용");
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<ReviewDTO.ReviewRes>> searchReview(@RequestParam(name="search", required = false, defaultValue = "") String search){
+        List<ReviewDTO.ReviewRes> res = reviewService.searchReviewByKeyword(search);
+
+        return ResponseEntity.ok().body(res);
+    }
+
+    @GetMapping("/page-review")
+    public ResponseEntity<ReviewDTO.PageReviewRes> searchPagingReview(@RequestParam(name="search", defaultValue = "") String search,
+                                             @RequestParam(name="page", required = false, defaultValue = "1") Integer page,
+                                             @RequestParam(name="size", required = false, defaultValue = "40") Integer size){
+        ReviewDTO.PageReviewRes res = reviewService.searchPagenationReviewByKeyword(search, page, size);
+
+        return ResponseEntity.ok().body(res);
     }
 
     @GetMapping("/review/{id}")
     public ResponseEntity<ReviewDTO.ReviewRes> getReviewByReviewId(@PathVariable("id") Long id){
         ReviewDTO.ReviewRes review = reviewService.getReviewByReviewId(id);
         return ResponseEntity.ok(review);
+    }
+
+    @GetMapping("/page-reviews")
+    public ResponseEntity<ReviewDTO.PageReviewRes> getPagingReviews(@RequestParam(name="page", required = false, defaultValue = "1") Integer page,
+                                           @RequestParam(name="size", required = false, defaultValue = "40") Integer size){
+        ReviewDTO.PageReviewRes res = reviewService.pagenationReview(page, size);
+        return ResponseEntity.ok(res);
     }
 
 }
