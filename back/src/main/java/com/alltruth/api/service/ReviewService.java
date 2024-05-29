@@ -15,6 +15,10 @@ import com.alltruth.api.repository.ReviewRepository;
 import com.alltruth.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,7 +54,6 @@ public class ReviewService {
                 .user(user)
                 .build();
 
-        System.out.println(images);
         // 리뷰 이미지들 파일 생성
         if(images != null){
 
@@ -89,7 +92,7 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ReviewDTO.ReviewRes> getReviewList(){
-        List<Review> reviews = reviewRepository.findAll();
+        List<Review> reviews = reviewRepository.findAllFetchJoin();
 
         List<ReviewDTO.ReviewRes> reviewRes = reviews.stream().map((item)->{
             ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toReviewResByReview(item);
@@ -190,6 +193,24 @@ public class ReviewService {
 
         return res;
     }
+
+    @Transactional(readOnly = true)
+    public ReviewDTO.PageReviewRes searchPagenationReviewByKeyword(String keyword, Integer page, Integer size){
+        Pageable pageRes = PageRequest.of(page - 1,size);
+        Page<Review> reviewList = reviewRepository.findBySearchPageable(keyword, pageRes);
+
+        return new ReviewDTO.PageReviewRes().toReviewResByReview(reviewList);
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewDTO.PageReviewRes pagenationReview(Integer page, Integer size){
+        Pageable pageRes = PageRequest.of(page - 1,size);
+        Page<Review> res = reviewRepository.findAllFetchJoinPageable(pageRes);
+
+        return new ReviewDTO.PageReviewRes().toReviewResByReview(res);
+    }
+
+
 
     public Resource getImage(String fileName){
         Resource res = fileUploadUtil.loadAsResource(fileName);
