@@ -58,7 +58,8 @@
 <script>
 import { reactive, ref } from 'vue';
 import instance from '../../api/axios';
-import router from '../../router/index'
+import router from '../../router/index';
+import store from '../../store/index';
 
 export default {
   name: 'Write',
@@ -118,13 +119,15 @@ export default {
       }
 
       try {
-        instance.post('/api/review', formData, {
+        const reviewRes = await instance.post('/api/review', formData, {
           headers: {
             'ContentType': 'multipart/form-data'
           }
         });
 
         window.alert("리뷰가 작성되었습니다.");
+        store.dispatch('addReview', reviewRes.data);
+
         router.push({ path: '/' });
 
       } catch (error) {

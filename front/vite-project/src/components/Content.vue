@@ -2,7 +2,7 @@
   <div class="album py-5 bg-body-tertiary">
     <div class="container">
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="col" v-for="review in state.reviews" :key="review.id">
+        <div class="col" v-for="review in reviews" :key="review.id">
           <Reviews :review="review" />
         </div>
       </div>
@@ -11,8 +11,9 @@
 </template>
 
 <script>
-import { onMounted, reactive } from 'vue';
+import { onMounted, computed } from 'vue';
 import Reviews from '../views/review/Reviews.vue';
+import store from '../store/index.js';
 import axios from 'axios';
 
 export default {
@@ -21,23 +22,14 @@ export default {
     Reviews,
   },
   setup() {
-    const state = reactive({
-      reviews: [],
+    onMounted(() => {
+      store.dispatch('fetchReviews');
     });
 
-    onMounted(() => {
-      axios
-        .get('/api/reviews')
-        .then((res) => {
-          state.reviews = res.data;
-        })
-        .catch((error) => {
-          console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
-        });
-    });
+    const reviews = computed(() => store.getters.reviews);
 
     return {
-      state,
+      reviews,
     };
   },
 };
