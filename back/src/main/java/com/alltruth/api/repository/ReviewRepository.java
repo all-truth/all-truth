@@ -49,5 +49,21 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "left join fetch r.user ")
     Page<Review> findAllFetchJoinPageable(Pageable pageable);
 
+    @Query("select r " +
+            "from Review r " +
+            "left join fetch r.reviewImages  " +
+            "left join fetch r.receiptImage " +
+            "left join fetch r.user u " +
+            "where u.id = :userId ")
+    Page<Review> findPagingReviewsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("select r " +
+            "from Review r " +
+            "left join fetch r.reviewImages  " +
+            "left join fetch r.receiptImage " +
+            "left join fetch r.user u " +
+            "where u.id = :userId ")
+    List<Review> findAllReviewsByUserId(@Param("userId") Long userId);
+
 
 }

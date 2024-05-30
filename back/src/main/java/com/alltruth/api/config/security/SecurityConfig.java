@@ -55,6 +55,8 @@ public class SecurityConfig {
                     request.requestMatchers(HttpMethod.PUT,"/review/**").authenticated();
                     request.requestMatchers(HttpMethod.POST,"/review/**").authenticated();
                     request.requestMatchers(HttpMethod.DELETE,"/review/**").authenticated();
+                    request.requestMatchers("/reviews/user/**").authenticated();
+                    request.requestMatchers("/review/comments/user/**").authenticated();
                     request.requestMatchers("/user").authenticated();
                     request.anyRequest().permitAll();
                 });

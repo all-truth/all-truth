@@ -41,4 +41,19 @@ public class CommentController {
 
         return ResponseEntity.ok(res);
     }
+
+    @GetMapping("/review/comments/user/my")
+    public ResponseEntity<List<CommentDTO.CommentRes>> getMyComments(){
+        List<CommentDTO.CommentRes> res = commentService.getMyComments();
+
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/review/comments/user/my-paging")
+    public ResponseEntity<CommentDTO.PageCommentRes> getMyPagingComments(@RequestParam(name="page", required = false, defaultValue = "1") Integer page,
+                                                                           @RequestParam(name="size", required = false, defaultValue = "40") Integer size){
+        CommentDTO.PageCommentRes res = commentService.getMyPagingComments(page, size);
+
+        return ResponseEntity.ok(res);
+    }
 }

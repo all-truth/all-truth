@@ -11,6 +11,9 @@ import com.alltruth.api.repository.CommentRepository;
 import com.alltruth.api.repository.ReviewRepository;
 import com.alltruth.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,6 +95,7 @@ public class CommentService {
                 .build();
     }
 
+    @Transactional
     public void deleteComment(Long reviewId){
         Long userId = SecurityConfig.getUserId();
         User user = userRepository.findById(userId).orElseThrow(()->new GlobalException(ErrorCode.USER_NOT_FOUND));
@@ -101,5 +105,33 @@ public class CommentService {
         if(comment.getUser().getId() != user.getId()) throw new GlobalException(ErrorCode.COMMENT_NOT_AUTHOR);
 
         commentRepository.delete(comment);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentDTO.CommentRes> getMyComments(){
+        Long userId = SecurityConfig.getUserId();
+
+        List<Comment> comments = commentRepository.findAllByUserIdFetchJoin(userId);
+        List<CommentDTO.CommentRes> res = comments.stream().map((item) ->{
+            User user = item.getUser();
+            CommentDTO.CommentRes comment = CommentDTO.CommentRes.builder()
+                    .id(item.getId())
+                    .content(item.getContent())
+                    .nickname(user.getNickname())
+                    .userId(user.getId())
+                    .build();
+            return comment;
+        }).toList();
+
+        return res;
+    }
+
+    @Transactional(readOnly = true)
+    public CommentDTO.PageCommentRes getMyPagingComments(Integer page, Integer size){
+        Long userId = SecurityConfig.getUserId();
+        Pageable pageRes = PageRequest.of(page - 1,size);
+        Page<Comment> res = commentRepository.findPagingByUserId(userId, pageRes);
+
+        return new CommentDTO.PageCommentRes().toCommentResByPage(res);
     }
 }

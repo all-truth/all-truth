@@ -76,7 +76,7 @@ public class ReviewController {
     public ResponseEntity<ReviewDTO.PageReviewRes> searchPagingReview(@RequestParam(name="search", defaultValue = "") String search,
                                              @RequestParam(name="page", required = false, defaultValue = "1") Integer page,
                                              @RequestParam(name="size", required = false, defaultValue = "40") Integer size){
-        ReviewDTO.PageReviewRes res = reviewService.searchPagenationReviewByKeyword(search, page, size);
+        ReviewDTO.PageReviewRes res = reviewService.searchPagingReviewByKeyword(search, page, size);
 
         return ResponseEntity.ok().body(res);
     }
@@ -90,7 +90,22 @@ public class ReviewController {
     @GetMapping("/page-reviews")
     public ResponseEntity<ReviewDTO.PageReviewRes> getPagingReviews(@RequestParam(name="page", required = false, defaultValue = "1") Integer page,
                                            @RequestParam(name="size", required = false, defaultValue = "40") Integer size){
-        ReviewDTO.PageReviewRes res = reviewService.pagenationReview(page, size);
+        ReviewDTO.PageReviewRes res = reviewService.getPagingReviews(page, size);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/reviews/user/my")
+    public ResponseEntity<List<ReviewDTO.ReviewRes>> getMyReviews(){
+        List<ReviewDTO.ReviewRes> res = reviewService.getMyReviews();
+
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/reviews/user/my-paging")
+    public ResponseEntity<ReviewDTO.PageReviewRes> getMyPagingReviews(@RequestParam(name="page", required = false, defaultValue = "1") Integer page,
+                                                                @RequestParam(name="size", required = false, defaultValue = "40") Integer size){
+
+        ReviewDTO.PageReviewRes res = reviewService.getMyPagingReviews(page, size);
         return ResponseEntity.ok(res);
     }
 
