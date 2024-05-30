@@ -3,7 +3,7 @@
     <div class="px-3">
       <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-          <router-link to="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-black text-decoration-none">
+          <router-link to="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-black text-decoration-none" @click="navigateToHome">
             <span class="home">All Truth</span>
           </router-link>
 
@@ -33,9 +33,9 @@
                 </a>
               </li>
               <li>
-                <a href="#" class="dropdown-item">Reviews
+                <router-link :to="{ path: '/', query: { filter: 'my-reviews' } }" class="dropdown-item">Reviews
                   <i class='bx bxs-file' aria-hidden="true"></i>
-                </a>
+                </router-link>
               </li>
               <li>
                 <a href="#" to="/cart" class="dropdown-item">Replies
@@ -95,11 +95,16 @@ export default {
       router.push({ path: '/' });
     };
 
+    const navigateToHome = () => {
+      store.dispatch('navigateToHome');
+    };
+
     return {
       isAuthenticated,
       searchText,
       logout,
       search,
+      navigateToHome
     }
   }
 }

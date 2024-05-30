@@ -11,10 +11,10 @@
 </template>
 
 <script>
-import { onMounted, computed } from 'vue';
+import { onMounted, computed, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import Reviews from '../views/review/Reviews.vue';
 import store from '../store/index.js';
-import axios from 'axios';
 
 export default {
   name: 'Content',
@@ -22,17 +22,50 @@ export default {
     Reviews,
   },
   setup() {
+    const route = useRoute();
     const searchText = computed(() => store.state.searchText);
     const searchResults = computed(() => store.state.searchResults);
+    const currentFilter = computed(() => store.getters.currentFilter);
 
-    onMounted(() => {
-      if(!searchText.value) {
-        store.dispatch('fetchReviews');
+    onMounted(async () => {
+      const currentFilter = store.getters.currentFilter;
+      if (currentFilter === 'my-reviews') {
+        await store.dispatch('fetchUserReviews');
+      } else {
+        await store.dispatch('fetchReviews');
       }
     });
 
+    watch(() => route.query.filter, (filter) => {
+      if (filter === 'my-reviews') {
+        getUserReviews();
+      } else {
+        getReviews();
+      }
+    });
+
+    watch(currentFilter, (filter) => {
+      if (filter === 'my-reviews') {
+        getUserReviews();
+      } else {
+        getReviews();
+      }
+    });
+
+    const getUserReviews = () => {
+      store.dispatch('fetchUserReviews');
+    };
+
+    const getReviews = () => {
+      store.dispatch('fetchReviews');
+    };
+
     const reviews = computed(() => {
-      return searchText.value ? searchResults.value : store.getters.reviews;
+      if (currentFilter.value === 'my-reviews') {
+        return store.getters.reviews;
+      } else {
+        return searchText.value ? searchResults.value : store.getters.reviews;
+      }
     });
 
     return {
