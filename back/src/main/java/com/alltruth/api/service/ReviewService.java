@@ -195,7 +195,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public ReviewDTO.PageReviewRes searchPagenationReviewByKeyword(String keyword, Integer page, Integer size){
+    public ReviewDTO.PageReviewRes searchPagingReviewByKeyword(String keyword, Integer page, Integer size){
         Pageable pageRes = PageRequest.of(page - 1,size);
         Page<Review> reviewList = reviewRepository.findBySearchPageable(keyword, pageRes);
 
@@ -203,12 +203,34 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public ReviewDTO.PageReviewRes pagenationReview(Integer page, Integer size){
+    public ReviewDTO.PageReviewRes getPagingReviews(Integer page, Integer size){
         Pageable pageRes = PageRequest.of(page - 1,size);
         Page<Review> res = reviewRepository.findAllFetchJoinPageable(pageRes);
 
         return new ReviewDTO.PageReviewRes().toReviewResByReview(res);
     }
+
+    @Transactional(readOnly = true)
+    public List<ReviewDTO.ReviewRes> getMyReviews(){
+        Long userId = SecurityConfig.getUserId();
+        List<Review> reviews = reviewRepository.findAllReviewsByUserId(userId);
+        List<ReviewDTO.ReviewRes> reviewRes = reviews.stream().map((item)->{
+            ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toReviewResByReview(item);
+            return res;
+        }).toList();
+
+        return reviewRes;
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewDTO.PageReviewRes getMyPagingReviews(Integer page, Integer size){
+        Long userId = SecurityConfig.getUserId();
+        Pageable pageRes = PageRequest.of(page - 1,size);
+        Page<Review> res = reviewRepository.findPagingReviewsByUserId(userId, pageRes);
+
+        return new ReviewDTO.PageReviewRes().toReviewResByReview(res);
+    }
+
 
 
 
