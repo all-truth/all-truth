@@ -28,20 +28,20 @@
             </a>
             <ul class="dropdown-menu text-small">
               <li>
-                <a class="dropdown-item" href="#">Profile
+                <router-link to="/profile" class="dropdown-item">Profile
                   <i class='bx bxs-user-check'></i>
-                </a>
+                </router-link>
               </li>
               <li>
                 <router-link :to="{ path: '/', query: { filter: 'my-reviews' } }" class="dropdown-item">Reviews
                   <i class='bx bxs-file' aria-hidden="true"></i>
                 </router-link>
               </li>
-              <li>
+              <!-- <li>
                 <a href="#" to="/cart" class="dropdown-item">Replies
                   <i class='bx bx-reply-all' aria-hidden="true"></i>
                 </a>
-              </li>
+              </li> -->
               <li><hr class="dropdown-divider"></li>
               <li>
                 <a to="/login" class="dropdown-item" @click="logout">Sign out
