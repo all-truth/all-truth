@@ -16,7 +16,7 @@ public class ReceiptImage {
     private String name;
     private String url;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "review_id")
     Review review;
 
