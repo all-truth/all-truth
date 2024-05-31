@@ -21,6 +21,8 @@ public class User {
     private String password;
     private String nickname;
     private String roles; // User, Admin
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "user", orphanRemoval = true)
+    private UserImage image;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
@@ -44,6 +46,21 @@ public class User {
         this.roles = roles;
         this.nickname = nickname;
     }
+
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
+    }
+    public void updatePassword(String password){
+        this.password = password;
+    }
+    public void updateImage(UserImage ui){
+        this.image = ui;
+    }
+
+    public void setImage(UserImage ui){
+        this.image = ui;
+    }
+
 
 
 }
