@@ -22,7 +22,7 @@
       <!-- 영수증, 이미지들 -->
       <div class="files">
         <div class="files_content">
-          <label for="title">영수증 이미지</label>
+          <label for="title">리뷰 이미지</label>
           <div class="files_content_input">
             <p v-if="state.form.reviewImages.length !== 0">
               <p v-for="(image, idx) in state.form.reviewImages" :key="idx">
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="files_content">
-          <label for="title">리뷰 이미지</label>
+          <label for="title">영수증 이미지</label>
           <div class="files_content_input">
             <p v-if="state.form.receiptImage !== null">
               {{ state.form.receiptImage.name }}
