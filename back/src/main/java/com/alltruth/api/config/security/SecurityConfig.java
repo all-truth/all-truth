@@ -51,13 +51,15 @@ public class SecurityConfig {
                     config.accessDeniedHandler(customDeniedHandler);
                 })
                 .authorizeHttpRequests((request)-> {
-                    request.requestMatchers(HttpMethod.POST,"/review").authenticated();
+                    request.requestMatchers(HttpMethod.POST,"/review/**").authenticated();
                     request.requestMatchers(HttpMethod.PUT,"/review/**").authenticated();
                     request.requestMatchers(HttpMethod.POST,"/review/**").authenticated();
                     request.requestMatchers(HttpMethod.DELETE,"/review/**").authenticated();
                     request.requestMatchers("/reviews/user/**").authenticated();
                     request.requestMatchers("/review/comments/user/**").authenticated();
-                    request.requestMatchers("/user").authenticated();
+                    request.requestMatchers(HttpMethod.DELETE,"/user/**").authenticated();
+                    request.requestMatchers(HttpMethod.PATCH,"/user/**").authenticated();
+                    request.requestMatchers(HttpMethod.PUT,"/user/**").authenticated();
                     request.anyRequest().permitAll();
                 });
 
