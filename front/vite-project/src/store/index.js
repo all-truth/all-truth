@@ -9,6 +9,10 @@ export default createStore({
       key: 'my-app-state',
       paths: ['currentFilter', 'reviews'],
     }),
+    createPersistedState({
+      key: 'user-state',
+      paths: ['currentUser', 'currentUser'],
+    }),
   ],
 
   state: {
@@ -17,6 +21,7 @@ export default createStore({
     searchText: '',
     searchResults: [],
     currentFilter: null,
+    currentUser: {},
   },
   mutations: {
     setAuthentication(state, status) {
@@ -39,7 +44,10 @@ export default createStore({
     },
     setCurrentFilter(state, filter) {
       state.currentFilter = filter;
-    }
+    },
+    setCurrentUser(state, user) {
+      state.currentUser = user;
+    },
   },
   actions: {
     initializeAuthentication({ commit }) {
@@ -82,10 +90,14 @@ export default createStore({
     },
     navigateToHome({ commit }) {
       commit('setCurrentFilter', null);
-    }
+    },
+    setCurrentUser({ commit }, user) {
+      commit('setCurrentUser', user);
+    },
   },
   getters: {
     reviews: (state) => state.reviews,
     currentFilter: (state) => state.currentFilter,
+    currentUser: (state) => state.currentUser,
   },
 });
