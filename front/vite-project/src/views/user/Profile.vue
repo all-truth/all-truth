@@ -4,16 +4,11 @@
       <!-- 프로필 이미지 -->
       <div class="profile">{{ state.user.nickname }} 님 안녕하세요!</div>
       <div class="my-5">
-        <img src="/default_profile_icon.png" class="profile-img" width="140" height="140" /><br/>
+        <button type="button" class="profile-img" @click="profileImageButton">
+          <img :src="`${state.user.image === '' || state.user.image === null ? '/default_profile_icon.png' : state.user.image}`" class="profile-img" width="140" height="140" /><br/>
+          <input type="file" multiple accept="image/*" class="form_file" @change="profileImageChange" ref="profileImageInput"/>
+        </button>
       </div>
-      
-      <!-- 이미지 수정 -->
-      <div class="files_content_input">
-        <p></p> 
-        <button type="button">파일 찾기</button>
-        <input type="file" multiple accept="image/*" class="form_file"/>
-      </div>
-      <button>수정하기</button>
       
       <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
         <div class="list-group profile__list">
@@ -42,8 +37,9 @@
 
 <script>
 import { useRouter } from 'vue-router'
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, ref } from 'vue'
 import instance from '../../api/axios.js'
+import store from '../../store/index.js'
 
 export default {
   name: 'Profile',
@@ -52,7 +48,11 @@ export default {
     const router = useRouter();
     const state = reactive({
       user: {},
+      form: {
+        image: null,
+      },
     });
+    const profileImageInput = ref(null);
 
     onMounted(() => {
       instance.get('/api/user').then((res) => {
@@ -68,9 +68,37 @@ export default {
       router.back();
     }
 
+    const profileImageButton = () => {
+      profileImageInput.value.click();
+    }
+
+    const profileImageChange = (event) => {
+      state.form.image = event.target.files[0];
+
+      // FormData 인스턴스 생성
+      const formData = new FormData();
+      
+      formData.append('image', state.form.image);
+
+      instance.patch('/api/user', formData, {
+        headers: {
+          'ContentType': 'multipart/form-data'
+        }
+      }).then((res) => {
+        console.log(res.data);
+        state.user = res.data;
+        store.dispatch('setCurrentUser', state.user);
+      }).catch((error) => {
+        console.error('프로필 이미지 수정 중 에러 발생 ', error);
+      });
+    }
+
     return {
       state,
       goBack,
+      profileImageInput,
+      profileImageButton,
+      profileImageChange
     }
   }
 }
@@ -87,6 +115,13 @@ export default {
 
 .previous.carousel-control-prev-icon {
   background-image: url('data:image/svg+xml;charset=utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" fill="%23000" viewBox="0 0 10 10"%3E%3Cpath d="M5.5 0l1 1-3 3 3 3-1 1-4-4 4-4z"/%3E%3C/svg%3E'); /* 왼쪽 화살표 검정 아이콘으로 변경 */
+}
+
+.profile-img {
+  width: 140px;
+  height: 140px;
+  border: none;
+  border-radius: 70%;
 }
 
 .profile__list {

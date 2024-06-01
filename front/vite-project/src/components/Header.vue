@@ -24,7 +24,7 @@
 
           <div class="dropdown text-end" v-if="isAuthenticated">
             <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="/default_profile_icon.png" alt="프로필 이미지" width="32" height="32" class="rounded-circle">
+              <img :src="`${user.image === '' || user.iamge === null ? '/default_profile_icon.png' : user.image}`" alt="프로필 이미지" width="32" height="32" class="rounded-circle">
             </a>
             <ul class="dropdown-menu text-small">
               <li>
@@ -67,6 +67,7 @@ export default {
   setup () {
     const isAuthenticated = computed(() => store.state.isAuthenticated);
     const searchText = ref('');
+    const user = computed(() => store.getters.currentUser);
 
     const logout = () => {
     //   axios.post('logout').then(() => {
@@ -102,6 +103,7 @@ export default {
     return {
       isAuthenticated,
       searchText,
+      user,
       logout,
       search,
       navigateToHome
