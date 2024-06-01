@@ -5,7 +5,6 @@ import com.alltruth.api.config.common.exceptions.GlobalException;
 import com.alltruth.api.config.file.FileUploadUtil;
 import com.alltruth.api.config.security.SecurityConfig;
 import com.alltruth.api.dto.UserDTO;
-import com.alltruth.api.entity.ReviewImage;
 import com.alltruth.api.entity.User;
 import com.alltruth.api.entity.UserImage;
 import com.alltruth.api.repository.UserRepository;
@@ -67,17 +66,21 @@ public class UserService {
             user.updatePassword(bCryptPasswordEncoder.encode(password));
         }
         if(image != null){
-            if(user.getImage() != null) { // 기존 이미지가 존재하면 삭제
-                fileUploadUtil.delete(user.getImage().getName());
-            }
-
             Path filePath = fileUploadUtil.store(image);
             String fileName = filePath.getFileName().toString();
-            UserImage userImage = UserImage.builder()
-                    .name(fileName)
-                    .user(user)
-                    .url("http://localhost:8080/user/img/" + fileName)
-                    .build();
+
+            if(user.getImage() != null) { // 기존 이미지가 존재하면 삭제
+                UserImage userImage = user.getImage();
+                fileUploadUtil.delete(userImage.getName());
+                userImage.updateUserImage(fileName,"http://localhost:8080/user/img/" + fileName );
+
+            }else{
+                UserImage userImage = UserImage.builder()
+                        .name(fileName)
+                        .user(user)
+                        .url("http://localhost:8080/user/img/" + fileName)
+                        .build();
+            }
         }
 
         return new UserDTO.UserInfoRes().toUserInfoResByUser(user);
