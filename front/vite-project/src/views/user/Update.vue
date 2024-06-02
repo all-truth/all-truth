@@ -64,7 +64,17 @@ export default {
 
     // 사용자 정보 수정
     const submit = () => {
-      instance.patch('/api/user', updateState.form).then(() => {
+      const formData = new FormData();
+      
+      formData.append('nickname', updateState.form.nickname);
+      formData.append('password', updateState.form.password);
+      formData.append('passwordConfirm', updateState.form.passwordConfirm);
+
+      instance.patch('/api/user', formData, {
+        headers: {
+          'ContentType': 'multipart/form-data'
+        }
+      }).then(() => {
         window.alert('변경이 완료되었습니다.');
         router.push({ path: '/profile' });
       }).catch((error) => {
