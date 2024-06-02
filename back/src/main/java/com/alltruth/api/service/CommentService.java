@@ -39,6 +39,7 @@ public class CommentService {
                     .content(item.getContent())
                     .nickname(user.getNickname())
                     .userId(user.getId())
+                    .image(user.getImage() != null ? user.getImage().getUrl() : "")
                     .build();
             return comment;
         }).toList();
@@ -72,6 +73,7 @@ public class CommentService {
                 .nickname(user.getNickname())
                 .id(commentEntity.getId())
                 .content(commentEntity.getContent())
+                .image(user.getImage() != null ? user.getImage().getUrl() : "")
                 .build();
     }
 
@@ -92,6 +94,7 @@ public class CommentService {
                 .nickname(user.getNickname())
                 .id(comment.getId())
                 .content(comment.getContent())
+                .image(user.getImage() != null ? user.getImage().getUrl() : "")
                 .build();
     }
 
@@ -119,6 +122,7 @@ public class CommentService {
                     .content(item.getContent())
                     .nickname(user.getNickname())
                     .userId(user.getId())
+                    .image(user.getImage() != null ? user.getImage().getUrl() : "")
                     .build();
             return comment;
         }).toList();
