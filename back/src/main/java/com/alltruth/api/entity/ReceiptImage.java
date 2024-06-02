@@ -27,4 +27,9 @@ public class ReceiptImage {
         this.name = name;
         review.setReceiptImage(this);
     }
+
+    public void updateReceiptImage(String url, String name){
+        this.url = url;
+        this.name = name;
+    }
 }
