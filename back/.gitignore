@@ -38,3 +38,9 @@ out/
 
 ### yml ###
 src/main/resources/application.yml
+
+### upload ###
+upload/**
+
+### front ###
+../front/**

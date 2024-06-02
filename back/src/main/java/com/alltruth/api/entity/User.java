@@ -9,6 +9,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="users")
 @Entity
 public class User {
     @Id
@@ -20,11 +21,13 @@ public class User {
     private String password;
     private String nickname;
     private String roles; // User, Admin
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
+    private UserImage image;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 
 
@@ -44,6 +47,23 @@ public class User {
         this.nickname = nickname;
     }
 
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
+    }
+    public void updatePassword(String password){
+        this.password = password;
+    }
+    public void updateImage(UserImage ui){
+        this.image = ui;
+    }
+
+    public void setImage(UserImage ui){
+        this.image = ui;
+    }
+
+    public void deleteImage(){
+        this.image = null;
+    }
 
 }
 

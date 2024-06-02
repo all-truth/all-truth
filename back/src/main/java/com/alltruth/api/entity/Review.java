@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
 @Getter
 @Entity
 public class Review {
@@ -26,13 +25,13 @@ public class Review {
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "review", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "review", orphanRemoval = true)
     private List<ReviewImage> reviewImages = new ArrayList<>();
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "review", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "review", orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "review", orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "review", orphanRemoval = true)
     private ReceiptImage receiptImage;
 
     @Builder
@@ -49,13 +48,11 @@ public class Review {
 
     }
 
-    public void update(String title, String content, String storeName, String region){
+    public void update(String tite, String content, String storeName, String region){
         this.title = title;
         this.content = content;
         this.storeName = storeName;
         this.region = region;
-        this.reviewImages.clear();
-        this.receiptImage = null;
     }
 
     public void setReceiptImage(ReceiptImage ri){

@@ -172,9 +172,10 @@ export default {
           localStorage.setItem('accessToken', accessToken);
           window.alert('로그인 성공!');
 
-          instance.get('/api/user').then(() => {
+          instance.get('/api/user').then((res) => {
             // 초기화 작업 수행
             store.dispatch('initializeAuthentication');
+            store.dispatch('setCurrentUser', res.data);
             router.push({path: '/'});
           }).catch((error) => {
             console.error('사용자 정보를 조회하는데 실패했습니다.', error);
@@ -204,5 +205,5 @@ export default {
 </script>
 
 <style>
-  @import '../assets/login.css'
+  @import '../assets/login.css';
 </style>

@@ -1,9 +1,8 @@
 <template>
   <div class="album py-5 bg-body-tertiary">
     <div class="container">
-
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="col" v-for="review in state.reviews" :key="review.id">
+        <div class="col" v-for="review in reviews" :key="review.id">
           <Reviews :review="review" />
         </div>
       </div>
@@ -12,9 +11,10 @@
 </template>
 
 <script>
-import { onMounted, reactive } from 'vue'
-import Reviews from '../views/review/Reviews.vue'
-import axios from 'axios'
+import { onMounted, computed, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import Reviews from '../views/review/Reviews.vue';
+import store from '../store/index.js';
 
 export default {
   name: 'Content',
@@ -22,23 +22,57 @@ export default {
     Reviews,
   },
   setup() {
-    const state = reactive({
-      reviews: []
-    })
+    const route = useRoute();
+    const searchText = computed(() => store.state.searchText);
+    const searchResults = computed(() => store.state.searchResults);
+    const currentFilter = computed(() => store.getters.currentFilter);
 
-    onMounted(() => {
-      axios.get('/api/reviews').then((res) => {
-        state.reviews = res.data;
-      }).catch((error) => {
-        console.error('리뷰 조회 중 에러가 발생했습니다. ', error);
-      });
+    onMounted(async () => {
+      const currentFilter = store.getters.currentFilter;
+      if (currentFilter === 'my-reviews') {
+        await store.dispatch('fetchUserReviews');
+      } else {
+        await store.dispatch('fetchReviews');
+      }
+    });
+
+    watch(() => route.query.filter, (filter) => {
+      if (filter === 'my-reviews') {
+        getUserReviews();
+      } else {
+        getReviews();
+      }
+    });
+
+    watch(currentFilter, (filter) => {
+      if (filter === 'my-reviews') {
+        getUserReviews();
+      } else {
+        getReviews();
+      }
+    });
+
+    const getUserReviews = () => {
+      store.dispatch('fetchUserReviews');
+    };
+
+    const getReviews = () => {
+      store.dispatch('fetchReviews');
+    };
+
+    const reviews = computed(() => {
+      if (currentFilter.value === 'my-reviews') {
+        return store.getters.reviews;
+      } else {
+        return searchText.value ? searchResults.value : store.getters.reviews;
+      }
     });
 
     return {
-      state,
-    }
-  }
-}
+      reviews,
+    };
+  },
+};
 </script>
 
 <style scoped>

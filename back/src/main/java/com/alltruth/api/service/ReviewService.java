@@ -15,6 +15,9 @@ import com.alltruth.api.repository.ReviewRepository;
 import com.alltruth.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +37,7 @@ public class ReviewService {
 
 
     @Transactional
-    public void writeReview(ReviewDTO.ReviewReq reviewReq,
+    public ReviewDTO.ReviewRes writeReview(ReviewDTO.ReviewReq reviewReq,
                             MultipartFile[] images,
                             MultipartFile receiptImage){
 
@@ -50,7 +53,6 @@ public class ReviewService {
                 .user(user)
                 .build();
 
-        System.out.println(images);
         // 리뷰 이미지들 파일 생성
         if(images != null){
 
@@ -80,13 +82,17 @@ public class ReviewService {
             //receiptImageRepository.save(receiptImageEntity);
 
         }
+        System.out.println("새로운 리뷰저장");
+        Review r = reviewRepository.save(review);
+        System.out.println("새로운 리뷰저장");
+        ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toReviewResByReview(r);
 
-        reviewRepository.save(review);
+        return res;
     }
 
     @Transactional(readOnly = true)
     public List<ReviewDTO.ReviewRes> getReviewList(){
-        List<Review> reviews = reviewRepository.findAll();
+        List<Review> reviews = reviewRepository.findAllFetchJoin();
 
         List<ReviewDTO.ReviewRes> reviewRes = reviews.stream().map((item)->{
             ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toReviewResByReview(item);
@@ -122,24 +128,27 @@ public class ReviewService {
 
 
 
-        Review review = reviewRepository.findById(reviewId)
+        Review review = reviewRepository.findByIdFetchJoin(reviewId)
                 .orElseThrow(()->new GlobalException(ErrorCode.REVIEW_NOT_FOUND));
 
         if(user.getId() != review.getUser().getId()) throw new GlobalException(ErrorCode.REVIEW_NOT_AUTHOR);
 
-        // 기존에 있던 이미지 파일 삭제
-        deleteImageFiles(review);
-
-        // 리뷰 엔티티 업데이트
+        // 리뷰 엔티티 String부분 업데이트
         review.update(reviewReq.getTitle(),
                 reviewReq.getContent(),
                 reviewReq.getStoreName(),
                 reviewReq.getRegion());
 
-        // 리뷰 이미지들 파일 생성
         if(images != null){
+            // 기존 리뷰 이미지 파일이 존재하면 삭제
+            review.getReviewImages().forEach((reviewImage)->{
+                fileUploadUtil.delete(reviewImage.getName());
+            });
+
+            review.getReviewImages().clear();
             Arrays.stream(images).forEach((file) ->{
                 if(!file.isEmpty()){
+                    System.out.println("수정");
                     Path filePath = fileUploadUtil.store(file);
                     ReviewImage reviewImage = ReviewImage.builder()
                             .name(filePath.getFileName().toString())
@@ -147,27 +156,36 @@ public class ReviewService {
                             .url("http://localhost:8080/review/img/" +filePath.getFileName().toString() )
                             .build();
 
-                    // 근데 이렇게 하나하나 save를 해줘야하나? review를 기준으로 save를 못 하나? > CascadtType.PERSIST로 설정해서 해결
-                    //reviewImageRepository.save(reviewImage);
-
+                    // id 값을 가져오기 위해 영속화 시킴 CascadeType으로 영속화를 안시켜줌. 부모 엔티티는 Merge이기 때문
+                    reviewImageRepository.save(reviewImage);
                 }
             });
         }
 
-        if(receiptImage != null && !receiptImage.isEmpty()){
+        if(receiptImage != null ){
+            // 기존 영수증 이미지 파일 제거
+            if(review.getReceiptImage() != null)  fileUploadUtil.delete(review.getReceiptImage().getName());
             Path filePath = fileUploadUtil.store(receiptImage);
-            ReceiptImage receiptImageEntity = ReceiptImage.builder()
-                    .name(filePath.getFileName().toString())
-                    .url("http://localhost:8080/review/img/" +filePath.getFileName().toString())
-                    .review(review)
-                    .build();
-            //receiptImageRepository.save(receiptImageEntity);
+            String filename = filePath.getFileName().toString();
+            String url = "http://localhost:8080/review/img/" + filename;
+
+            if(review.getReceiptImage() == null){
+                System.out.println("영수증 이미지가 널");
+                ReceiptImage receiptImageEntity = ReceiptImage.builder()
+                        .name(filePath.getFileName().toString())
+                        .url(url)
+                        .review(review)
+                        .build();
+            }else{
+                ReceiptImage receiptImageEntity = review.getReceiptImage();
+                receiptImageEntity.updateReceiptImage(url, filename);
+                // id 값을 가져오기 위해 영속화 시킴 CascadeType으로 영속화를 안시켜줌. 부모 엔티티는 Merge이기 때문
+                receiptImageRepository.save(receiptImageEntity);
+            }
 
         }
 
-        Review reviewRes = reviewRepository.save(review);
-
-        ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toReviewResByReview(reviewRes);
+        ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toReviewResByReview(review);
 
         return res;
     }
@@ -176,6 +194,53 @@ public class ReviewService {
     public ReviewDTO.ReviewRes getReviewByReviewId(Long id){
         Review review = reviewRepository.findById(id).orElseThrow(()->new GlobalException(ErrorCode.REVIEW_NOT_FOUND));
         return new ReviewDTO.ReviewRes().toReviewResByReview(review);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReviewDTO.ReviewRes> searchReviewByKeyword(String keyword){
+        List<Review> reviewList = reviewRepository.findByTitleOrContent(keyword);
+        List<ReviewDTO.ReviewRes> res = reviewList.stream()
+                .map((review)-> new ReviewDTO.ReviewRes().toReviewResByReview(review))
+                .toList();
+
+        return res;
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewDTO.PageReviewRes searchPagingReviewByKeyword(String keyword, Integer page, Integer size){
+        Pageable pageRes = PageRequest.of(page - 1,size);
+        Page<Review> reviewList = reviewRepository.findBySearchPageable(keyword, pageRes);
+
+        return new ReviewDTO.PageReviewRes().toReviewResByReview(reviewList);
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewDTO.PageReviewRes getPagingReviews(Integer page, Integer size){
+        Pageable pageRes = PageRequest.of(page - 1,size);
+        Page<Review> res = reviewRepository.findAllFetchJoinPageable(pageRes);
+
+        return new ReviewDTO.PageReviewRes().toReviewResByReview(res);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReviewDTO.ReviewRes> getMyReviews(){
+        Long userId = SecurityConfig.getUserId();
+        List<Review> reviews = reviewRepository.findAllReviewsByUserId(userId);
+        List<ReviewDTO.ReviewRes> reviewRes = reviews.stream().map((item)->{
+            ReviewDTO.ReviewRes res = new ReviewDTO.ReviewRes().toReviewResByReview(item);
+            return res;
+        }).toList();
+
+        return reviewRes;
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewDTO.PageReviewRes getMyPagingReviews(Integer page, Integer size){
+        Long userId = SecurityConfig.getUserId();
+        Pageable pageRes = PageRequest.of(page - 1,size);
+        Page<Review> res = reviewRepository.findPagingReviewsByUserId(userId, pageRes);
+
+        return new ReviewDTO.PageReviewRes().toReviewResByReview(res);
     }
 
     public Resource getImage(String fileName){

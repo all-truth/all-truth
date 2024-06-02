@@ -1,0 +1,41 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+
+  jpa:
+#    show-sql: true
+    properties:
+      hibernate:
+#        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    data: classpath:./data.sql
+    initialization-mode: never
+  hibernate:
+    ddl-auto: create-drop
+#  h2:
+#    console:
+#      enabled: true
+#logging:
+#  level:
+    #    org.hibernate.SQL: debug # logger에 출력하려면
+    #    org.hibernate.type.descriptor.sql: trace # 파라미터 값 출력
+    # org.hibernate.orm.jdbc.bind: trace
+ttt:
+  a: aaa
+jwt:
+  issuer: seungyn
+  secret-key: secretkey
+  access-token-expiry: 3600000 #1000 * 60 * 60

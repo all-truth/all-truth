@@ -1,6 +1,6 @@
 <template>
   <div class="carousel-item" :class="{ active: isActive }">
-    <img :src="image.url" class="d-block w-100" alt="리뷰 이미지">
+    <img :src="image.url || 'default_review_img.png'" class="d-block w-100" alt="리뷰 이미지">
   </div>
 </template>
 

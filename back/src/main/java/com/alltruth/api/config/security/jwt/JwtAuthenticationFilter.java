@@ -16,7 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Date;
 
 // 시큐리티에서 username, password를 받아주는 필터
 @RequiredArgsConstructor
@@ -50,7 +49,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)throws IOException, ServletException{
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
-        String jwtToken = jwtTokenProvider.generateToken(principalDetails.getUser(), Duration.ofHours(1));
+        String jwtToken = jwtTokenProvider.generateToken(principalDetails.getUser(), Duration.ofHours(99999999));
 
         System.out.println("successfulAuthentication 토큰 생성   " + jwtToken);
         // 사용자 헤더에 응답시킴

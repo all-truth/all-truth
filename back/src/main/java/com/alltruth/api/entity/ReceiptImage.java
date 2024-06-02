@@ -16,7 +16,7 @@ public class ReceiptImage {
     private String name;
     private String url;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "review_id")
     Review review;
 
@@ -26,5 +26,10 @@ public class ReceiptImage {
         this.review = review;
         this.name = name;
         review.setReceiptImage(this);
+    }
+
+    public void updateReceiptImage(String url, String name){
+        this.url = url;
+        this.name = name;
     }
 }
