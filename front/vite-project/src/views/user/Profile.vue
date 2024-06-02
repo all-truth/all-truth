@@ -4,10 +4,8 @@
       <!-- 프로필 이미지 -->
       <div class="profile">{{ state.user.nickname }} 님 안녕하세요!</div>
       <div class="my-5">
-        <button type="button" class="profile-img" @click="profileImageButton">
-          <img :src="`${state.user.image === '' || state.user.image === null ? '/default_profile_icon.png' : state.user.image}`" class="profile-img" width="140" height="140" /><br/>
-          <input type="file" multiple accept="image/*" class="form_file" @change="profileImageChange" ref="profileImageInput"/>
-        </button>
+        <img :src="`${state.user.image === '' || state.user.image === null ? '/default_profile_icon.png' : state.user.image}`" class="profile-img" width="140" height="140" @click="profileImageButton"/><br/>
+        <input type="file" multiple accept="image/*" class="form_file" @change="profileImageChange" ref="profileImageInput"/>
       </div>
       
       <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
@@ -122,6 +120,7 @@ export default {
   height: 140px;
   border: none;
   border-radius: 70%;
+  cursor: pointer;
 }
 
 .profile__list {

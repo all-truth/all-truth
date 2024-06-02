@@ -24,7 +24,7 @@
 
           <div class="dropdown text-end" v-if="isAuthenticated">
             <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <img :src="`${user.image === '' || user.iamge === null ? '/default_profile_icon.png' : user.image}`" alt="프로필 이미지" width="32" height="32" class="rounded-circle">
+              <img :src="`${user.image === '' || user.iamge === null ? '/default_profile_icon.png' : user.image}`" alt="프로필 이미지" width="32" height="32" class="rounded-circle profile-img">
             </a>
             <ul class="dropdown-menu text-small">
               <li>
@@ -132,5 +132,10 @@ export default {
 .dropdown {
   cursor: pointer;
   text-align: center !important;
+}
+
+.profile-img {
+  width: 32px;
+  height: 32px;
 }
 </style>
