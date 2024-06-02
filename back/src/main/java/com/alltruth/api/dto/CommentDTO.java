@@ -24,6 +24,7 @@ public class CommentDTO {
         private String content;
         private Long userId;
         private String nickname;
+        private String image;
     }
 
     @Getter
@@ -40,6 +41,7 @@ public class CommentDTO {
                             .content(comment.getContent())
                             .userId(comment.getUser().getId())
                             .nickname(comment.getUser().getNickname())
+                            .image(comment.getUser().getImage()!= null ?comment.getUser().getImage().getUrl() : "" )
                             .build())
                     .toList();
 
