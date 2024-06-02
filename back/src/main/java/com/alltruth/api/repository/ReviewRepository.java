@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
@@ -22,6 +23,15 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "or r.region like %:search%"
     )
     List<Review> findByTitleOrContent(@Param("search") String search);
+
+    @Query("select r " +
+            "from Review r " +
+            "left join fetch r.reviewImages a " +
+            "left join fetch r.receiptImage " +
+            "left join fetch r.user " +
+            "where r.id = :reviewId "
+    )
+    Optional<Review> findByIdFetchJoin(@Param("reviewId") Long reviewId);
 
     @Query("select r " +
             "from Review r " +

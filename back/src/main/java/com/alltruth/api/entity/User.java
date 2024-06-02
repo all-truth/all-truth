@@ -21,13 +21,13 @@ public class User {
     private String password;
     private String nickname;
     private String roles; // User, Admin
-    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "user", orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     private UserImage image;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 
 
@@ -61,7 +61,9 @@ public class User {
         this.image = ui;
     }
 
-
+    public void deleteImage(){
+        this.image = null;
+    }
 
 }
 

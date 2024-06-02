@@ -29,4 +29,14 @@ public class UserImage {
         this.user = user;
         user.setImage(this);
     }
+
+    public void updateUserImage(String name, String url){
+        this.name = name;
+        this.url = url;
+    }
+
+    public void deleteUser(){
+        this.user = null;
+    }
+
 }
