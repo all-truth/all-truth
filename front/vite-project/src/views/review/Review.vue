@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <button @click="goBack" class="previous carousel-control-prev-icon px-4 my-4" aria-hidden="true"></button>
-    <button v-if="state.review.userId === state.user.id" class="review__remove btn btn-danger" @click="removeReview">삭제</button>
+    <button v-if="state.review.userId && state.user.id && state.review.userId === state.user.id" class="review__remove btn btn-danger" @click="removeReview">삭제</button>
     <div class="row featurette">
 
       <!-- 리뷰 상세 정보 -->
@@ -9,11 +9,10 @@
         <h2 class="featurette-heading fw-normal lh-1">{{ state.review.title }}</h2>
         <div class="my-4">
           <span class="name">{{ state.review.storeName }}</span>
-          <span class="text-body-secondary">{{ state.review.region }}</span>
+          <span class="text-body-secondary mx-5">{{ state.review.region }}</span>
         </div>
         <div class="col-md-5">
-          <span class="img" :style="{backgroundImage: `url(${state.review.receiptImage !== null ? state.review.receiptImage : '/default_review_img.png'})`}"></span>
-          <img :src="`${state.review.receiptImage}`" alt="" width="250px" height="250px">
+          <img :src="`${state.review.receiptImage !== '' ? state.review.receiptImage : '/default_receipt_img.png'}`" alt="" width="250px" height="250px">
           <small class="receipt_name text-body-secondary">인증 영수증</small>
         </div>
         <p class="lead my-5">{{ state.review.content }}</p>
@@ -30,7 +29,10 @@
             </button>
           </div>
           <div class="carousel-inner">
-            <Image v-for="(image, idx) in state.review.images" :key="image.id" :image="image" :class="{ active: idx === 0 }" />
+            <Image v-if="state.review.images.length > 0" v-for="(image, idx) in state.review.images" :key="image.id" :image="image" :class="{ active: idx === 0 }" />
+              <div v-else class="carousel-item active">
+                <img src="/default_review_img.png" class="d-block w-100" alt="기본 리뷰 이미지">
+              </div>
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
             <span class="prev carousel-control-prev-icon" aria-hidden="true"></span>
