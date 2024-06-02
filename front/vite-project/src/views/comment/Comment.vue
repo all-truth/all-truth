@@ -1,8 +1,5 @@
 <template>
-    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false">
-      <title>Placeholder</title>
-      <rect width="100%" height="100%" fill="#007bff"></rect>
-    </svg>
+  <img :src="`${comment.image === '' ? '/default_profile_icon.png' : comment.image}`" class="rounded-circle profile-img" width="32" height="32">
     <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
       <div class="d-flex justify-content-between">
         <strong class="text-gray-dark">{{ comment.nickname }}</strong>
@@ -31,6 +28,7 @@ export default {
     // watchEffect를 통해 props의 변화를 감지
     watchEffect(() => {
       state.user = props.user;
+      console.log(state.user);
     });
 
     const remove = async (commentId) => {
@@ -51,5 +49,9 @@ export default {
 </script>
 
 <style scoped>
+.profile-img {
+  width: 32px;
+  height: 32px;
+}
 
 </style>
