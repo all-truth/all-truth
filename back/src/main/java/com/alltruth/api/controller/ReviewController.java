@@ -5,14 +5,12 @@ import com.alltruth.api.service.FileUploadService;
 import com.alltruth.api.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.MalformedURLException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,9 +23,7 @@ public class ReviewController {
     public ResponseEntity writeReview(@RequestPart("reviewReq") ReviewDTO.ReviewReq reviewReq,
                             @RequestPart(value = "images", required = false) MultipartFile[] images,
                             @RequestPart(value = "receiptImage", required = false) MultipartFile receiptImage) {
-        System.out.println("controller::: ");
-        System.out.println(images);
-        System.out.println(receiptImage);
+
         ReviewDTO.ReviewRes res = reviewService.writeReview(reviewReq, images, receiptImage);
         // 리뷰 작성하면 작성된 리뷰
 
